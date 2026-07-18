@@ -126,8 +126,13 @@ class Main:
         self.tasks_frame = tk.Frame(self.root)
         self.tasks_frame.grid(row=1, column=1, padx=10, pady=10)
         self.tasks_frame.columnconfigure(2, weight=5)
-        self.tasks_frame_button = tk.Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=0,column=0,sticky="nsew",padx=5,pady=5) #button to show the tasks frame
-        self.close_button = tk.Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=1,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
+
+        #creating the buttons for the menu
+        self.tasks_frame_button = tk.Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=0,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
+        self.timer_frame_button = tk.Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)
+        self.shop_frame_button = tk.Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5) 
+        self.logout_frame_button = tk.Button(self.button_menu_frame, text="logout", command=lambda: self.show_frame(0)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5)
+        self.close_button = tk.Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=4,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
         
 
         
