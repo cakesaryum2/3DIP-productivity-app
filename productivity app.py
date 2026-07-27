@@ -29,10 +29,10 @@ def time_to_sec(hour,minute,second):
 #class that manages the tasks and task information
 class Tasks_screen:
     def __init__(self,master):
-        #setting canvas
+        #setting canvas for tasks to go into
         self.tasks_canvas = tk.Canvas(master,width=420,bg="#C5C5C5",borderwidth=2)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
-        #setting frame in canvas
+        #setting frame in canvas to into the canvas to put elements into
         self.tasks_frame = tk.Frame(self.tasks_canvas,bg="#C5C5C5",width=400,height=200)
 
         #creating the entry for user to add tasks
@@ -63,6 +63,7 @@ class Tasks_screen:
         task = self.user_tasks_entry.get()
         due_date = self.due_date_entry.get()
         if task == "" or due_date == "":
+            messagebox.showerror("Error", "Please fill in both the task and due date fields.")
             return False
         
         try:
@@ -72,23 +73,13 @@ class Tasks_screen:
             return False
 
         return True
-
+    
 #function to add tasks 
     def add_task(self):
         if self.validate_input():
             self.task = Task(self.user_tasks_entry.get(), self.due_date_entry.get(), self.num_of_tasks)  # Create a new instance of User_Task for each task added
-            '''#creating a frame for the task for all relevant task information
-            task_frame = tk.Frame(self.tasks_frame,width=400,height=75)
-            task_frame.grid(row=self.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
-            task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
-
-            #adds the task information for each task added
-            tk.Label(task_frame,text=tasks.user_tasks_entry.get(),wraplength=300).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
-            tk.Label(task_frame,text=f"due: {tasks.due_date_entry.get()}").grid(row=1,column=0,sticky="nw")#label of of due 
-            tk.Button(task_frame, text="X",command=lambda r=self.num_of_tasks: self.complete_task(r)).grid(row=0,column=3,sticky="se") #button to remove task
-'''
             #saving information used for saving and creation/ deletion of tasks
-            self.task_frames[tasks_screen.num_of_tasks] = self.task
+            self.task_frames[self.num_of_tasks] = self.task
 
             
             #task_frame.columnconfigure(2,weight=1)
@@ -97,7 +88,7 @@ class Tasks_screen:
             print(self.task_frames)
             
         else:
-            messagebox.showerror("Error", "Please fill in both the task and due date fields.")
+            pass
 
     def complete_task(self, row):
         # destroy every widget sitting in that row
@@ -135,7 +126,8 @@ class Task():
             #creating a frame for the task for all relevant task information
             self.task_frame = tk.Frame(tasks_screen.tasks_frame,width=400,height=75)
             self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
-            self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
+            #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
+            self.task_frame.columnconfigure(0,minsize=300)
             self.task_frame.columnconfigure(2,weight=1)
 
             self.task = task
@@ -155,19 +147,26 @@ class Task():
 
 class Login_screen:
     def __init__(self,master):
-        #setting canvas
-        self.login_canvas = tk.Canvas(master,width=420,bg="#C5C5C5",borderwidth=2)
-        self.login_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas
-        self.login_frame = tk.Frame(self.login_canvas,bg="#C5C5C5",width=400,height=200)
+        self.main_login_frame = tk.Frame(master,bg="blue",width=width-100,height=height-50)
+        print(master.winfo_width(),master.winfo_height())
+        self.main_login_frame.grid(row=0,column=0,sticky="nsew")
+        self.main_login_frame.grid_propagate(False)
+        self.login_title = tk.Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1)
+        self.login_btn = tk.Button(self.main_login_frame,text="login",command=lambda:None).grid(row=1,column=1)
+        self.signup_btn = tk.Button(self.main_login_frame,text="signup",command=lambda:None).grid(row=2,column=1)
+        self.login_frame = tk.Frame(master,bg="#FA2727",width=400,height=200)
+        self.signup_frame = tk.Frame(master,bg="#FA2727",width=400,height=200)
+
+
 
 #class that runs the main program functions and sets the windows
 class Main:
     def __init__(self,root):
         self.root = root #sets the variable root as the root which is the Tk window
-        self.root.title("productivity manager")
-        self.root.geometry("700x700")
-        self.root.configure()
+        self.root.rowconfigure(1, weight=1)
+        self.root.columnconfigure(1, weight=1)
+        self.root.configure(bg="#813677")
 
         #creating frame for title and user information
         self.top_frame = tk.Frame(self.root,height=50,bg="#d3d3d3")
@@ -175,16 +174,17 @@ class Main:
 
         #creating a frame for menu buttons
         self.button_menu_frame = tk.Frame(self.root,width=100,bg="#d3d3d3")
-        self.button_menu_frame.grid(row=1,column=0,stick="nsew",rowspan=5)
+        self.button_menu_frame.grid(row=1,column=0,sticky="nsew",rowspan=5)
 
         #creating the tasks grid
         self.tasks_frame = tk.Frame(self.root)
-        self.tasks_frame.grid(row=1, column=1, padx=10, pady=10)
+        self.tasks_frame.grid(row=1, column=1, padx=10, pady=10,sticky="nsew")
         self.tasks_frame.columnconfigure(2, weight=5)
 
         #creaing the login frame
-        self.login_frame = tk.Frame(self.root)
-        self.login_frame.grid(row=1, column=1, padx=10, pady=10)
+        self.login_frame = tk.Frame(self.root,bg="#44fa63")
+        self.login_frame.grid(row=1,rowspan=10, column=1,columnspan=10,sticky="nsew")
+        
 
         #creating the buttons for the menu
         self.tasks_frame_button = tk.Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=0,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
@@ -241,6 +241,11 @@ def add_scroll_bar(canvas,frame):
 
 #setting up the root
 root = tk.Tk()
+root.title("productivity manager")
+root.geometry("700x700")
+#variables for width and heigth of window used for sizing frames
+width=700
+height=700
 main = Main(root)
 #instantiating tasks frame
 tasks_screen = Tasks_screen(main.tasks_frame)
