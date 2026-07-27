@@ -30,10 +30,10 @@ def time_to_sec(hour,minute,second):
 class Tasks_screen:
     def __init__(self,master):
         #setting canvas for tasks to go into
-        self.tasks_canvas = tk.Canvas(master,width=420,bg="#C5C5C5",borderwidth=2)
+        self.tasks_canvas = tk.Canvas(master,width=420,height=400,bg="#C5C5C5",borderwidth=2)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
-        self.tasks_frame = tk.Frame(self.tasks_canvas,bg="#C5C5C5",width=400,height=200)
+        self.tasks_frame = tk.Frame(self.tasks_canvas,bg="#703535",width=500,height=300)
 
         #creating the entry for user to add tasks
         tk.Label(master,text="task:").grid(row=0,column=0)
@@ -58,6 +58,7 @@ class Tasks_screen:
         self.task_information = {} #can be used for data saving later
         self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
         self.default_point_reward = 10
+        
     #checks if the user has given the inputs
     def validate_input(self):
         task = self.user_tasks_entry.get()
@@ -138,11 +139,9 @@ class Task():
                 "due_date": due_date,
                 "position": position}'''
             #adds the task information for each task added
-            tk.Label(self.task_frame,text=self.task,wraplength=300).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
+            tk.Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
             tk.Label(self.task_frame,text=f"due: {self.due_date}").grid(row=1,column=0,sticky="nw")#label of of due 
-            tk.Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="se") #button to remove task
-
-
+            tk.Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
 
 
 class Login_screen:
@@ -152,12 +151,55 @@ class Login_screen:
         print(master.winfo_width(),master.winfo_height())
         self.main_login_frame.grid(row=0,column=0,sticky="nsew")
         self.main_login_frame.grid_propagate(False)
-        self.login_title = tk.Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1)
-        self.login_btn = tk.Button(self.main_login_frame,text="login",command=lambda:None).grid(row=1,column=1)
-        self.signup_btn = tk.Button(self.main_login_frame,text="signup",command=lambda:None).grid(row=2,column=1)
-        self.login_frame = tk.Frame(master,bg="#FA2727",width=400,height=200)
-        self.signup_frame = tk.Frame(master,bg="#FA2727",width=400,height=200)
+        self.main_login_frame.columnconfigure(0,weight=1)
+        self.main_login_frame.columnconfigure(2,weight=1)
+        #creating login title and buttons for signup and login
+        self.login_title = tk.Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1,padx=5,pady=5)
+        self.login_btn = tk.Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=1,column=1,padx=5,pady=5)
+        self.signup_btn = tk.Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=2,column=1,padx=5,pady=5)
 
+        #frame for the login
+        self.login_frame = tk.Frame(master,bg="#FA2727",width=width-100,height=200)
+        self.login_frame.grid(row=0,column=0,sticky="nsew")
+        self.login_frame.columnconfigure(0,weight=1)
+        self.login_frame.columnconfigure(3,weight=1)
+        #creating buttons and entries for the login
+        tk.Label(self.login_frame,text="Login").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        tk.Label(self.login_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        tk.Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        self.username_entry = tk.Entry(self.login_frame).grid(row=1,column=2,padx=5,pady=5)
+        self.password_entry = tk.Entry(self.login_frame).grid(row=2,column=2,padx=5,pady=5)
+        tk.Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
+        tk.Button(self.login_frame,text="login",command=lambda:None).grid(row=3,column=2,padx=5,pady=5)
+        tk.Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
+        tk.Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
+
+        #frame for the signup 
+        self.signup_frame = tk.Frame(master,bg="#E127FA",width=width-100,height=height-50)
+        self.signup_frame.grid(row=0,column=0,sticky="nsew")
+        self.signup_frame.columnconfigure(0,weight=1)
+        self.signup_frame.columnconfigure(3,weight=1)
+        tk.Label(self.signup_frame,text="Signup").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        tk.Label(self.signup_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        tk.Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        tk.Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
+        tk.Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
+        self.username_entry = tk.Entry(self.signup_frame).grid(row=1,column=2,padx=5,pady=5)
+        self.age_entry = tk.Entry(self.signup_frame).grid(row=2,column=2,padx=5,pady=5)
+        self.password_entry = tk.Entry(self.signup_frame).grid(row=3,column=2,padx=5,pady=5)
+        self.confirm_password_entry = tk.Entry(self.signup_frame).grid(row=4,column=2,padx=5,pady=5)
+        tk.Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
+        tk.Button(self.signup_frame,text="signup",command=lambda:None).grid(row=5,column=2,padx=5,pady=5)
+        tk.Label(self.signup_frame,text="Already have an account?").grid(row=6,column=1,columnspan=2,padx=5,pady=5)
+        tk.Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
+
+    def signup(self):
+        #getting the user info from the user to create an account 
+        username = self.username_entry.get()
+        age = self.age_entry.get()
+        password = self.password_entry.get()
+        confirm_password = self.confirm_password_entry.get()
+        #chekcing if the username exists already(add when saving is created)
 
 
 #class that runs the main program functions and sets the windows
@@ -196,7 +238,7 @@ class Main:
 
 
     def show_frame(self,frame):
-        frames = [self.tasks_frame,self.login_frame,"signup","startup"]
+        frames = [self.tasks_frame,self.login_frame,"shop","signup","login"]
         frames[frame].lift()
 
 #function to add a scroll bar to a canvas    
