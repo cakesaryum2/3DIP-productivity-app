@@ -1,5 +1,6 @@
 #This program is a time management app where it helps someone with time management by gamifying it.
 import tkinter as tk
+from tkinter import END
 from tkinter import messagebox
 import os 
 import time
@@ -148,7 +149,6 @@ class Login_screen:
     def __init__(self,master):
         #setting frame in canvas
         self.main_login_frame = tk.Frame(master,bg="blue",width=width-100,height=height-50)
-        print(master.winfo_width(),master.winfo_height())
         self.main_login_frame.grid(row=0,column=0,sticky="nsew")
         self.main_login_frame.grid_propagate(False)
         self.main_login_frame.columnconfigure(0,weight=1)
@@ -170,7 +170,7 @@ class Login_screen:
         self.username_entry = tk.Entry(self.login_frame).grid(row=1,column=2,padx=5,pady=5)
         self.password_entry = tk.Entry(self.login_frame).grid(row=2,column=2,padx=5,pady=5)
         tk.Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
-        tk.Button(self.login_frame,text="login",command=lambda:None).grid(row=3,column=2,padx=5,pady=5)
+        tk.Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
         tk.Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
         tk.Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
 
@@ -184,14 +184,19 @@ class Login_screen:
         tk.Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
         tk.Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
         tk.Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
-        self.username_entry = tk.Entry(self.signup_frame).grid(row=1,column=2,padx=5,pady=5)
-        self.age_entry = tk.Entry(self.signup_frame).grid(row=2,column=2,padx=5,pady=5)
-        self.password_entry = tk.Entry(self.signup_frame).grid(row=3,column=2,padx=5,pady=5)
-        self.confirm_password_entry = tk.Entry(self.signup_frame).grid(row=4,column=2,padx=5,pady=5)
+        self.username_entry = tk.Entry(self.signup_frame)
+        self.username_entry.grid(row=1,column=2,padx=5,pady=5)
+        self.age_entry = tk.Entry(self.signup_frame)
+        self.age_entry.grid(row=2,column=2,padx=5,pady=5)
+        self.password_entry = tk.Entry(self.signup_frame)
+        self.password_entry.grid(row=3,column=2,padx=5,pady=5)
+        self.confirm_password_entry = tk.Entry(self.signup_frame)
+        self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
         tk.Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
-        tk.Button(self.signup_frame,text="signup",command=lambda:None).grid(row=5,column=2,padx=5,pady=5)
+        tk.Button(self.signup_frame,text="signup",command=self.signup).grid(row=5,column=2,padx=5,pady=5)
         tk.Label(self.signup_frame,text="Already have an account?").grid(row=6,column=1,columnspan=2,padx=5,pady=5)
         tk.Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
+        self.main_login_frame.lift()
 
     def signup(self):
         #getting the user info from the user to create an account 
@@ -200,6 +205,29 @@ class Login_screen:
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
         #chekcing if the username exists already(add when saving is created)
+        #checking if age is valid (minimum age is 13+)
+        try:
+            if int(age)<13:
+                messagebox.showerror("age not valid","you must be 13 or older to register an account")
+            #checking that each password is the same
+            elif password != confirm_password:
+                messagebox.showerror("password","your passwords must match")
+            else:
+                #save new user data
+                main.tasks_frame.lift()
+        except ValueError:pass
+
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        #checks if usernaem exists adn gets the password if it does and if password exists
+        if True:
+            main.tasks_frame.lift()
+        else:
+            messagebox.showerror("login failuire","username or password incorrect")
+        
+        
+
 
 
 #class that runs the main program functions and sets the windows
@@ -232,7 +260,7 @@ class Main:
         self.tasks_frame_button = tk.Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=0,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
         self.timer_frame_button = tk.Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)
         self.shop_frame_button = tk.Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5) 
-        self.logout_frame_button = tk.Button(self.button_menu_frame, text="logout", command=lambda: self.show_frame(1)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5)
+        self.logout_frame_button = tk.Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=3,column=0,sticky="nsew",padx=5,pady=5)
         self.close_button = tk.Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=4,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
         
 
@@ -240,6 +268,14 @@ class Main:
     def show_frame(self,frame):
         frames = [self.tasks_frame,self.login_frame,"shop","signup","login"]
         frames[frame].lift()
+
+    def logout(self):
+        login.main_login_frame.lift()
+        login.age_entry.delete(0,END)
+        login.password_entry.delete(0,END)
+        login.username_entry.delete(0,END)
+        login.confirm_password_entry.delete(0,END)
+        self.show_frame(1)
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
