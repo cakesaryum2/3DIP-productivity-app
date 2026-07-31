@@ -1,6 +1,5 @@
 #This program is a time management app where it helps someone with time management by gamifying it.
-import tkinter as tk
-from tkinter import END
+from tkinter import*
 from tkinter import messagebox
 import os 
 import time
@@ -31,23 +30,23 @@ def time_to_sec(hour,minute,second):
 class Tasks_screen:
     def __init__(self,master):
         #setting canvas for tasks to go into
-        self.tasks_canvas = tk.Canvas(master,width=420,height=400,bg="#C5C5C5",borderwidth=2)
+        self.tasks_canvas = Canvas(master,width=420,height=400,bg="#C5C5C5",borderwidth=2)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
-        self.tasks_frame = tk.Frame(self.tasks_canvas,bg="#703535",width=500,height=300)
+        self.tasks_frame = Frame(self.tasks_canvas,bg="#703535",width=500,height=300)
 
         #creating the entry for user to add tasks
-        tk.Label(master,text="task:").grid(row=0,column=0)
-        self.user_tasks_entry = tk.Entry(master)
+        Label(master,text="task:").grid(row=0,column=0)
+        self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=0,column=1)
 
         #creating user to enter due date for task
-        tk.Label(master,text="due date:").grid(row=1,column=0)
-        self.due_date_entry = tk.Entry(master)
+        Label(master,text="due date:").grid(row=1,column=0)
+        self.due_date_entry = Entry(master)
         self.due_date_entry.grid(row=1,column=1)
 
         #creating button to add task
-        tk.Button(master,text="add task",command=self.add_task).grid(row=2,column=0,columnspan=2,padx=5,pady=5)
+        Button(master,text="add task",command=self.add_task).grid(row=2,column=0,columnspan=2,padx=5,pady=5)
 
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
 
@@ -83,15 +82,11 @@ class Tasks_screen:
             #saving information used for saving and creation/ deletion of tasks
             self.task_frames[self.num_of_tasks] = self.task
 
-            
             #task_frame.columnconfigure(2,weight=1)
             self.num_of_tasks +=1 #increases by 1 for positioning
-            print(self.task_information)
-            print(self.task_frames)
             
         else:
             pass
-
     def complete_task(self, row):
         # destroy every widget sitting in that row
         task = self.task_frames.get(row)
@@ -114,7 +109,6 @@ class Tasks_screen:
             if time_diff < 0 or time_diff > 1209600:  #if the task is completed late or the task is completed more than 2 weeks early
                 return self.default_point_reward
             else:
-                print("ag")
                 return self.default_point_reward + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
                 
         except OverflowError:
@@ -126,8 +120,7 @@ class Task():
         def __init__(self,task,due_date,position):
             #super().__init__(main.tasks_frame)
             #creating a frame for the task for all relevant task information
-            self.task_frame = tk.Frame(tasks_screen.tasks_frame,width=400,height=75)
-            self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
+            self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75)
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
             self.task_frame.columnconfigure(0,minsize=300)
             self.task_frame.columnconfigure(2,weight=1)
@@ -140,62 +133,63 @@ class Task():
                 "due_date": due_date,
                 "position": position}'''
             #adds the task information for each task added
-            tk.Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
-            tk.Label(self.task_frame,text=f"due: {self.due_date}").grid(row=1,column=0,sticky="nw")#label of of due 
-            tk.Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
+            Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
+            Label(self.task_frame,text=f"due: {self.due_date}").grid(row=1,column=0,sticky="nw")#label of of due 
+            Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
+            self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
 
 class Login_screen:
     def __init__(self,master):
         #setting frame in canvas
-        self.main_login_frame = tk.Frame(master,bg="blue",width=width-100,height=height-50)
-        self.main_login_frame.grid(row=0,column=0,sticky="nsew")
+        self.main_login_frame = Frame(master,bg="blue",width=700,height=700)
+        self.main_login_frame.grid(row=0,column=0)
         self.main_login_frame.grid_propagate(False)
         self.main_login_frame.columnconfigure(0,weight=1)
         self.main_login_frame.columnconfigure(2,weight=1)
         #creating login title and buttons for signup and login
-        self.login_title = tk.Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1,padx=5,pady=5)
-        self.login_btn = tk.Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=1,column=1,padx=5,pady=5)
-        self.signup_btn = tk.Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=2,column=1,padx=5,pady=5)
+        self.login_title = Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1,padx=5,pady=5)
+        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=1,column=1,padx=5,pady=5)
+        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=2,column=1,padx=5,pady=5)
 
         #frame for the login
-        self.login_frame = tk.Frame(master,bg="#FA2727",width=width-100,height=200)
+        self.login_frame = Frame(master,bg="#FA2727",width=width-100,height=200)
         self.login_frame.grid(row=0,column=0,sticky="nsew")
         self.login_frame.columnconfigure(0,weight=1)
         self.login_frame.columnconfigure(3,weight=1)
         #creating buttons and entries for the login
-        tk.Label(self.login_frame,text="Login").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        tk.Label(self.login_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        tk.Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        self.username_entry = tk.Entry(self.login_frame).grid(row=1,column=2,padx=5,pady=5)
-        self.password_entry = tk.Entry(self.login_frame).grid(row=2,column=2,padx=5,pady=5)
-        tk.Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
-        tk.Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
-        tk.Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
-        tk.Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.login_frame,text="Login").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.login_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        self.username_entry = Entry(self.login_frame).grid(row=1,column=2,padx=5,pady=5)
+        self.password_entry = Entry(self.login_frame).grid(row=2,column=2,padx=5,pady=5)
+        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
+        Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
+        Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
 
         #frame for the signup 
-        self.signup_frame = tk.Frame(master,bg="#E127FA",width=width-100,height=height-50)
+        self.signup_frame = Frame(master,bg="#E127FA",width=width-100,height=height-50)
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
         self.signup_frame.columnconfigure(0,weight=1)
         self.signup_frame.columnconfigure(3,weight=1)
-        tk.Label(self.signup_frame,text="Signup").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        tk.Label(self.signup_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        tk.Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        tk.Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
-        tk.Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
-        self.username_entry = tk.Entry(self.signup_frame)
+        Label(self.signup_frame,text="Signup").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.signup_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
+        self.username_entry = Entry(self.signup_frame)
         self.username_entry.grid(row=1,column=2,padx=5,pady=5)
-        self.age_entry = tk.Entry(self.signup_frame)
+        self.age_entry = Entry(self.signup_frame)
         self.age_entry.grid(row=2,column=2,padx=5,pady=5)
-        self.password_entry = tk.Entry(self.signup_frame)
+        self.password_entry = Entry(self.signup_frame)
         self.password_entry.grid(row=3,column=2,padx=5,pady=5)
-        self.confirm_password_entry = tk.Entry(self.signup_frame)
+        self.confirm_password_entry = Entry(self.signup_frame)
         self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
-        tk.Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
-        tk.Button(self.signup_frame,text="signup",command=self.signup).grid(row=5,column=2,padx=5,pady=5)
-        tk.Label(self.signup_frame,text="Already have an account?").grid(row=6,column=1,columnspan=2,padx=5,pady=5)
-        tk.Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
+        Button(self.signup_frame,text="signup",command=self.signup).grid(row=5,column=2,padx=5,pady=5)
+        Label(self.signup_frame,text="Already have an account?").grid(row=6,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
         self.main_login_frame.lift()
 
     def signup(self):
@@ -214,59 +208,74 @@ class Login_screen:
                 messagebox.showerror("password","your passwords must match")
             else:
                 #save new user data
-                main.tasks_frame.lift()
-        except ValueError:pass
+                main.main_frame.lift()
+        except ValueError:messagebox.showerror("age","your age must be an integer")
 
     def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
         #checks if usernaem exists adn gets the password if it does and if password exists
         if True:
-            main.tasks_frame.lift()
+            main.main_frame.lift()
         else:
             messagebox.showerror("login failuire","username or password incorrect")
         
-        
-
-
 
 #class that runs the main program functions and sets the windows
 class Main:
     def __init__(self,root):
         self.root = root #sets the variable root as the root which is the Tk window
-        self.root.rowconfigure(1, weight=1)
-        self.root.columnconfigure(1, weight=1)
         self.root.configure(bg="#813677")
 
-        #creating frame for title and user information
-        self.top_frame = tk.Frame(self.root,height=50,bg="#d3d3d3")
-        self.top_frame.grid(row=0,column=0,columnspan=3,sticky="nsew")
+        #creating a main frame that holds all the other freames but the login frame
+        self.main_frame = Frame(self.root,height=700,width=700)
+        self.main_frame.grid(column=0,row=0)
+        self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.columnconfigure(1, weight=1)
+        self.main_frame.grid_propagate(False)
 
-        #creating a frame for menu buttons
-        self.button_menu_frame = tk.Frame(self.root,width=100,bg="#d3d3d3")
-        self.button_menu_frame.grid(row=1,column=0,sticky="nsew",rowspan=5)
+        #creating frame for title and user information
+        self.top_frame = Frame(self.main_frame,height=50,bg="#d3d3d3")
+        self.top_frame.grid(row=0,column=1,columnspan=3,sticky="nsew")
+        self.top_frame.grid_propagate(False) #stops the frame from resizing to the widgets inside
+        self.top_frame.columnconfigure(0,weight=2)
+        self.top_frame.columnconfigure(1,weight=8)
+        self.top_frame.columnconfigure(2,weight=1)
+        
+
+        #creating a frame for menu buttons and image
+        self.button_menu_frame = Frame(self.main_frame,width=100,bg="#d3d3d3")
+        self.button_menu_frame.grid(row=0,column=0,sticky="nsew",rowspan=5)
 
         #creating the tasks grid
-        self.tasks_frame = tk.Frame(self.root)
+        self.tasks_frame = Frame(self.main_frame)
         self.tasks_frame.grid(row=1, column=1, padx=10, pady=10,sticky="nsew")
         self.tasks_frame.columnconfigure(2, weight=5)
 
         #creaing the login frame
-        self.login_frame = tk.Frame(self.root,bg="#44fa63")
-        self.login_frame.grid(row=1,rowspan=10, column=1,columnspan=10,sticky="nsew")
+        # self.login_frame = Frame(self.main_frame,bg="#44fa63")
+        # self.login_frame.grid(row=1,rowspan=10, column=1,columnspan=10,sticky="nsew")
         
+        #adding in the user info for top frame
+        self.username_lbl = Label(self.top_frame,text="UsernameUsernameUsername").grid(row=0,column=0,sticky="w",padx=5,pady=2)
+        self.points_lbl = Label(self.top_frame,text="points: 1000").grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
+        self.level_lbl = Label(self.top_frame,text="level: 3").grid(row=1,column=0,sticky="w",padx=5,pady=2)
+        self.next_level_lbl = Label(self.top_frame,text="Next lvl 1000/10000").grid(row=1,column=2,sticky="w",padx=5,pady=2)
+
+        #adding frame for user image
+        image_frame = Frame(self.button_menu_frame,width=100,height=100)
+        image_frame.grid(row=0,column=0,pady=5)
 
         #creating the buttons for the menu
-        self.tasks_frame_button = tk.Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=0,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
-        self.timer_frame_button = tk.Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)
-        self.shop_frame_button = tk.Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5) 
-        self.logout_frame_button = tk.Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=3,column=0,sticky="nsew",padx=5,pady=5)
-        self.close_button = tk.Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=4,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
-        
+        self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
+        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
+        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(0)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
+        self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
+        self.close_button = Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
 
     def show_frame(self,frame):
-        frames = [self.tasks_frame,self.login_frame,"shop","signup","login"]
+        frames = [self.tasks_frame,"shop"]
         frames[frame].lift()
 
     def logout(self):
@@ -275,12 +284,12 @@ class Main:
         login.password_entry.delete(0,END)
         login.username_entry.delete(0,END)
         login.confirm_password_entry.delete(0,END)
-        self.show_frame(1)
+
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
     #creating scrollbar for the canvas
-    my_scrollbar = tk.Scrollbar(canvas, orient=tk.VERTICAL, command=canvas.yview)
+    my_scrollbar = Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
     my_scrollbar.place(relx=1, rely=0, relheight=1, anchor="ne")
     canvas.configure(yscrollcommand=my_scrollbar.set)
     # Track scrollability
@@ -318,7 +327,7 @@ def add_scroll_bar(canvas,frame):
        
 
 #setting up the root
-root = tk.Tk()
+root = Tk()
 root.title("productivity manager")
 root.geometry("700x700")
 #variables for width and heigth of window used for sizing frames
@@ -327,7 +336,7 @@ height=700
 main = Main(root)
 #instantiating tasks frame
 tasks_screen = Tasks_screen(main.tasks_frame)
-login = Login_screen(main.login_frame)
+login = Login_screen(main.root)
 
 
 root.mainloop()
