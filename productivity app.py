@@ -1,6 +1,7 @@
 #This program is a time management app where it helps someone with time management by gamifying it.
 from tkinter import*
 from tkinter import messagebox
+from tkcalendar import Calendar
 import os 
 import time
 from datetime import datetime
@@ -30,20 +31,24 @@ def time_to_sec(hour,minute,second):
 class Tasks_screen:
     def __init__(self,master):
         #setting canvas for tasks to go into
-        self.tasks_canvas = Canvas(master,width=420,height=400,bg="#C5C5C5",borderwidth=2)
+        self.tasks_canvas = Canvas(master,width=400,height=300,bg="#C5C5C5",borderwidth=6)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
         self.tasks_frame = Frame(self.tasks_canvas,bg="#703535",width=500,height=300)
 
         #creating the entry for user to add tasks
-        Label(master,text="task:").grid(row=0,column=0)
+        Label(master,text="task:").grid(row=1,column=0)
         self.user_tasks_entry = Entry(master)
-        self.user_tasks_entry.grid(row=0,column=1)
+        self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
 
         #creating user to enter due date for task
-        Label(master,text="due date:").grid(row=1,column=0)
-        self.due_date_entry = Entry(master)
-        self.due_date_entry.grid(row=1,column=1)
+        # Label(master,text="due date:").grid(row=1,column=0)
+        # self.due_date_entry = Entry(master)
+        # self.due_date_entry.grid(row=1,column=1)
+        self.calander = Calendar(master, selectmode = 'day', date_pattern="dd/mm/yyyy",
+               year = datetime.now().year, month = datetime.now().month,
+               day = datetime.now().day,font=("Arial", 10),)
+        self.calander.grid(row=0,column=0,columnspan=2,sticky="nsew")
 
         #creating button to add task
         Button(master,text="add task",command=self.add_task).grid(row=2,column=0,columnspan=2,padx=5,pady=5)
@@ -62,9 +67,10 @@ class Tasks_screen:
     #checks if the user has given the inputs
     def validate_input(self):
         task = self.user_tasks_entry.get()
-        due_date = self.due_date_entry.get()
+        due_date = self.calander.get_date()
+        print(due_date)
         if task == "" or due_date == "":
-            messagebox.showerror("Error", "Please fill in both the task and due date fields.")
+            messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
             return False
         
         try:
@@ -78,11 +84,9 @@ class Tasks_screen:
 #function to add tasks 
     def add_task(self):
         if self.validate_input():
-            self.task = Task(self.user_tasks_entry.get(), self.due_date_entry.get(), self.num_of_tasks)  # Create a new instance of User_Task for each task added
+            self.task = Task(self.user_tasks_entry.get(), self.calander.get_date(), self.num_of_tasks)  # Create a new instance of User_Task for each task added
             #saving information used for saving and creation/ deletion of tasks
             self.task_frames[self.num_of_tasks] = self.task
-
-            #task_frame.columnconfigure(2,weight=1)
             self.num_of_tasks +=1 #increases by 1 for positioning
             
         else:
@@ -118,7 +122,6 @@ class Tasks_screen:
 #class that manages each individual user's tasks and information
 class Task():
         def __init__(self,task,due_date,position):
-            #super().__init__(main.tasks_frame)
             #creating a frame for the task for all relevant task information
             self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75)
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
@@ -128,10 +131,7 @@ class Task():
             self.task = task
             self.due_date = due_date
             self.position = position
-            '''self.task_information = {
-                "task": task,
-                "due_date": due_date,
-                "position": position}'''
+
             #adds the task information for each task added
             Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
             Label(self.task_frame,text=f"due: {self.due_date}").grid(row=1,column=0,sticky="nw")#label of of due 
@@ -221,6 +221,10 @@ class Login_screen:
             messagebox.showerror("login failuire","username or password incorrect")
         
 
+class Shop_screen:
+    def __init__(self,master):
+        Label(master,text="shop").grid(row=0,column=0)
+
 #class that runs the main program functions and sets the windows
 class Main:
     def __init__(self,root):
@@ -232,10 +236,11 @@ class Main:
         self.main_frame.grid(column=0,row=0)
         self.main_frame.rowconfigure(1, weight=1)
         self.main_frame.columnconfigure(1, weight=1)
+        
         self.main_frame.grid_propagate(False)
 
         #creating frame for title and user information
-        self.top_frame = Frame(self.main_frame,height=50,bg="#d3d3d3")
+        self.top_frame = Frame(self.main_frame,height=60,bg="#d3d3d3")
         self.top_frame.grid(row=0,column=1,columnspan=3,sticky="nsew")
         self.top_frame.grid_propagate(False) #stops the frame from resizing to the widgets inside
         self.top_frame.columnconfigure(0,weight=2)
@@ -247,14 +252,18 @@ class Main:
         self.button_menu_frame = Frame(self.main_frame,width=100,bg="#d3d3d3")
         self.button_menu_frame.grid(row=0,column=0,sticky="nsew",rowspan=5)
 
-        #creating the tasks grid
-        self.tasks_frame = Frame(self.main_frame)
-        self.tasks_frame.grid(row=1, column=1, padx=10, pady=10,sticky="nsew")
-        self.tasks_frame.columnconfigure(2, weight=5)
+        #creating shop frame
+        self.shop_frame = Frame(self.main_frame,width=350,height=700,bg="#1076C9")
+        self.shop_frame.grid(row=1,column=1,sticky="ne",rowspan=5)
+        self.shop_frame.grid_propagate(False)
 
-        #creaing the login frame
-        # self.login_frame = Frame(self.main_frame,bg="#44fa63")
-        # self.login_frame.grid(row=1,rowspan=10, column=1,columnspan=10,sticky="nsew")
+        #creating the tasks grid
+        self.tasks_frame = Frame(self.main_frame,borderwidth=6)
+        self.tasks_frame.grid(row=1, column=1,sticky="nsew")
+        self.tasks_frame.columnconfigure(3, weight=5)
+        self.tasks_frame.columnconfigure(2, weight=4)
+        self.tasks_frame.columnconfigure(1, weight=1)
+
         
         #adding in the user info for top frame
         self.username_lbl = Label(self.top_frame,text="UsernameUsernameUsername").grid(row=0,column=0,sticky="w",padx=5,pady=2)
@@ -269,21 +278,22 @@ class Main:
         #creating the buttons for the menu
         self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
         self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
-        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(0)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
+        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
         self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
         self.close_button = Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
 
     def show_frame(self,frame):
-        frames = [self.tasks_frame,"shop"]
+        frames = [self.tasks_frame,self.shop_frame]
         frames[frame].lift()
 
     def logout(self):
-        login.main_login_frame.lift()
-        login.age_entry.delete(0,END)
-        login.password_entry.delete(0,END)
-        login.username_entry.delete(0,END)
-        login.confirm_password_entry.delete(0,END)
+        login_screen.main_login_frame.lift()
+        main.tasks_frame.lift()
+        login_screen.age_entry.delete(0,END)
+        login_screen.password_entry.delete(0,END)
+        login_screen.username_entry.delete(0,END)
+        login_screen.confirm_password_entry.delete(0,END)
 
 
 #function to add a scroll bar to a canvas    
@@ -335,9 +345,9 @@ width=700
 height=700
 main = Main(root)
 #instantiating tasks frame
+shop = Shop_screen(main.shop_frame)
 tasks_screen = Tasks_screen(main.tasks_frame)
-login = Login_screen(main.root)
-
+login_screen = Login_screen(main.root)
 
 root.mainloop()
 
