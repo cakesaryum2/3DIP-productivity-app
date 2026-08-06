@@ -41,10 +41,7 @@ class Tasks_screen:
         self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
 
-        #creating user to enter due date for task
-        # Label(master,text="due date:").grid(row=1,column=0)
-        # self.due_date_entry = Entry(master)
-        # self.due_date_entry.grid(row=1,column=1)
+        #creating a calendar that the user can select a date from for the due date
         self.calander = Calendar(master, selectmode = 'day', date_pattern="dd/mm/yyyy",
                year = datetime.now().year, month = datetime.now().month,
                day = datetime.now().day,font=("Arial", 10),)
@@ -60,7 +57,6 @@ class Tasks_screen:
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
         #creating variable for number of tasks for positioning 
         self.task_frames = {} #can be used for data saving later saves the object not frame
-        self.task_information = {} #can be used for data saving later
         self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
         self.default_point_reward = 10
         
@@ -73,7 +69,7 @@ class Tasks_screen:
             messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
             return False
         
-        try:
+        try:#chekcs if the duedate is in the correct format 
             datetime.strptime(due_date, "%d/%m/%Y")  # raises ValueError if invalid
         except ValueError:
             messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).")
@@ -99,8 +95,6 @@ class Tasks_screen:
         if frame is not None:
             frame.destroy()
             self.task_frames.pop(row, None)
-            self.task_information.pop(row, None)
-            print(self.task_information)
             # get the time of completion and compare with the time due to see if the task was completed on time or late and to calculate points to reward the user with
             print(self.calc_points(task.due_date)) 
 
@@ -117,7 +111,6 @@ class Tasks_screen:
                 
         except OverflowError:
             return self.default_point_reward  #if the due date is too far in the future or past, just return the default point reward
-
 
 #class that manages each individual user's tasks and information
 class Task():
