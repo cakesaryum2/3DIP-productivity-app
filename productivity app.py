@@ -5,6 +5,7 @@ from tkcalendar import Calendar
 import os 
 import time
 from datetime import datetime
+import json
 #making sure the current directory is the same as the file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -12,7 +13,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 def sec_to_time(total_seconds):
     hours = total_seconds/3600
     hour = int(hours)
-    print(f"hours: {hour}")
+    print(f"hours: {hour}") 
 
     minutes = (hours-hour)*60
     minute = int(minutes)
@@ -64,16 +65,15 @@ class Tasks_screen:
     def validate_input(self):
         task = self.user_tasks_entry.get()
         due_date = self.calander.get_date()
-        print(due_date)
-        if task == "" or due_date == "":
+        if task == "" or due_date == "": #checks if entries are empty and gives error message returns false for validation
             messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
             return False
         
         try:#chekcs if the duedate is in the correct format 
             datetime.strptime(due_date, "%d/%m/%Y")  # raises ValueError if invalid
         except ValueError:
-            messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).")
-            return False
+            messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).") 
+            return False #returns false for failed validation
 
         return True
     
@@ -84,9 +84,9 @@ class Tasks_screen:
             #saving information used for saving and creation/ deletion of tasks
             self.task_frames[self.num_of_tasks] = self.task
             self.num_of_tasks +=1 #increases by 1 for positioning
-            
         else:
             pass
+        
     def complete_task(self, row):
         # destroy every widget sitting in that row
         task = self.task_frames.get(row)
@@ -131,7 +131,7 @@ class Task():
             Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
             self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
-
+#class that manages the login screen
 class Login_screen:
     def __init__(self,master):
         #setting frame in canvas
@@ -154,8 +154,10 @@ class Login_screen:
         Label(self.login_frame,text="Login").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
         Label(self.login_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
         Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        self.username_entry = Entry(self.login_frame).grid(row=1,column=2,padx=5,pady=5)
-        self.password_entry = Entry(self.login_frame).grid(row=2,column=2,padx=5,pady=5)
+        self.login_username_entry = Entry(self.login_frame)
+        self.login_username_entry.grid(row=1,column=2,padx=5,pady=5)
+        self.login_password_entry = Entry(self.login_frame)
+        self.login_password_entry.grid(row=2,column=2,padx=5,pady=5)
         Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
         Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
         Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
@@ -171,12 +173,12 @@ class Login_screen:
         Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
         Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
         Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
-        self.username_entry = Entry(self.signup_frame)
-        self.username_entry.grid(row=1,column=2,padx=5,pady=5)
+        self.signup_username_entry = Entry(self.signup_frame)
+        self.signup_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.age_entry = Entry(self.signup_frame)
         self.age_entry.grid(row=2,column=2,padx=5,pady=5)
-        self.password_entry = Entry(self.signup_frame)
-        self.password_entry.grid(row=3,column=2,padx=5,pady=5)
+        self.signup_password_entry = Entry(self.signup_frame)
+        self.signup_password_entry.grid(row=3,column=2,padx=5,pady=5)
         self.confirm_password_entry = Entry(self.signup_frame)
         self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
         Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
@@ -187,36 +189,90 @@ class Login_screen:
 
     def signup(self):
         #getting the user info from the user to create an account 
-        username = self.username_entry.get()
+        username = self.signup_username_entry.get()
         age = self.age_entry.get()
-        password = self.password_entry.get()
+        password = self.signup_password_entry.get()
         confirm_password = self.confirm_password_entry.get()
+        with open(r"userdata.json","r") as file:
+            users = json.load(file)
         #chekcing if the username exists already(add when saving is created)
         #checking if age is valid (minimum age is 13+)
         try:
-            if int(age)<13:
+            if int(age)<min_age:
                 messagebox.showerror("age not valid","you must be 13 or older to register an account")
             #checking that each password is the same
             elif password != confirm_password:
                 messagebox.showerror("password","your passwords must match")
+            elif username in users:
+                messagebox.showerror("username","this username already exists")
             else:
                 #save new user data
+                new_user_data = {"username":username,
+                "password":password,
+                "points":0,
+                "level":0,
+                "tasks":
+                    {"0":{"task_details":"",
+                    "due_date":"",
+                    "position":0}},
+                "shop_details":
+                    {"item_name":
+                        {"own":False,
+                        "equiped":False}}}
+                with open(r"userdata.json","r") as file:
+                    users = json.load(file)
+                users[username] = new_user_data
+                with open(r"userdata.json","w") as file:
+                    json.dump(users,file,indent=4)
+                get_user_data(username)
+
+                main.username_lbl.config(text=f"username: {user.username}")
+                main.level_lbl.config(text=f"level: {user.level}")
+                main.points_lbl.config(text=f"points: {user.points}")
+                main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
+
                 main.main_frame.lift()
         except ValueError:messagebox.showerror("age","your age must be an integer")
 
     def login(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
-        #checks if usernaem exists adn gets the password if it does and if password exists
-        if True:
+        username = self.login_username_entry.get()
+        password = self.login_password_entry.get()
+        #checks if username exists and gets the password if it does and if password exists
+        if self.validate_login(username,password):
+            main.username_lbl.config(text=f"username: {user.username}")
+            main.level_lbl.config(text=f"level: {user.level}")
+            main.points_lbl.config(text=f"points: {user.points}")
+            main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
             main.main_frame.lift()
         else:
             messagebox.showerror("login failuire","username or password incorrect")
-        
 
+    def validate_login(self,username,password):
+        with open(r"userdata.json","r") as file:
+            users = json.load(file)
+            if username in users:
+                if password == users[username]["password"]:
+                    get_user_data(username)
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+#class that manages the shop screen
 class Shop_screen:
     def __init__(self,master):
         Label(master,text="shop").grid(row=0,column=0)
+
+#class that holds the user data and information for the user
+class User_data:
+    def __init__(self,username,password,user_data):
+        self.username = username
+        self.password = password
+        self.points = user_data[username]["points"]
+        self.level = user_data[username]["level"]
+        self.tasks_info = user_data[username]["tasks"]
+        self.shop_details = user_data[username]["shop_details"]
 
 #class that runs the main program functions and sets the windows
 class Main:
@@ -259,10 +315,15 @@ class Main:
 
         
         #adding in the user info for top frame
-        self.username_lbl = Label(self.top_frame,text="UsernameUsernameUsername").grid(row=0,column=0,sticky="w",padx=5,pady=2)
-        self.points_lbl = Label(self.top_frame,text="points: 1000").grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
-        self.level_lbl = Label(self.top_frame,text="level: 3").grid(row=1,column=0,sticky="w",padx=5,pady=2)
-        self.next_level_lbl = Label(self.top_frame,text="Next lvl 1000/10000").grid(row=1,column=2,sticky="w",padx=5,pady=2)
+        self.username_lbl = Label(self.top_frame,text="username: UsernameUsernameUsername")
+        self.points_lbl = Label(self.top_frame,text="points: 1000")
+        self.level_lbl = Label(self.top_frame,text="level: 3")
+        self.next_level_lbl = Label(self.top_frame,text="Next lvl: 1000/10000")
+
+        self.username_lbl.grid(row=0,column=0,sticky="w",padx=5,pady=2)
+        self.points_lbl.grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
+        self.level_lbl.grid(row=1,column=0,sticky="w",padx=5,pady=2)
+        self.next_level_lbl.grid(row=1,column=2,sticky="w",padx=5,pady=2)
 
         #adding frame for user image
         image_frame = Frame(self.button_menu_frame,width=100,height=100)
@@ -284,10 +345,23 @@ class Main:
         login_screen.main_login_frame.lift()
         main.tasks_frame.lift()
         login_screen.age_entry.delete(0,END)
-        login_screen.password_entry.delete(0,END)
-        login_screen.username_entry.delete(0,END)
+        login_screen.signup_password_entry.delete(0,END)
+        login_screen.signup_username_entry.delete(0,END)
+        login_screen.login_password_entry.delete(0,END)
+        login_screen.login_username_entry.delete(0,END)
         login_screen.confirm_password_entry.delete(0,END)
 
+#function that gets user data from external file
+def get_user_data(username):
+    global user
+    with open(r"userdata.json","r") as file:
+        users = json.load(file)
+    print({users[username]["username"]})
+    user = User_data(users[username]["username"],users[username]["password"],users)
+
+#function that saves userdata to external file
+def save_user_date(username):
+    pass
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
@@ -336,6 +410,7 @@ root.geometry("700x700")
 #variables for width and heigth of window used for sizing frames
 width=700
 height=700
+min_age = 13
 main = Main(root)
 #instantiating tasks frame
 shop = Shop_screen(main.shop_frame)
