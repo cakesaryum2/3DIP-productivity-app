@@ -1,0 +1,22 @@
+{
+    "user": {
+        "username": "user",
+        "password": "",
+        "points": 0,
+        "level": 0,
+        "tasks": {
+            "0": {
+                "task_details": "",
+                "due_date": "",
+                "description": "",
+                "position": 0
+            }
+        },
+        "shop_details": {
+            "item_name": {
+                "own": false,
+                "equiped": false
+            }
+        }
+    }
+}

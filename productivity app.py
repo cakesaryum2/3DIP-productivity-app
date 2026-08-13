@@ -41,6 +41,9 @@ class Tasks_screen:
         Label(master,text="task:").grid(row=1,column=0)
         self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
+        Label(master,text="description:").grid(row=2,column=0)
+        self.user_description_entry = Entry(master)
+        self.user_description_entry.grid(row=2,column=1,pady=5,sticky="w")
 
         #creating a calendar that the user can select a date from for the due date
         self.calander = Calendar(master, selectmode = 'day', date_pattern="dd/mm/yyyy",
@@ -49,29 +52,38 @@ class Tasks_screen:
         self.calander.grid(row=0,column=0,columnspan=2,sticky="nsew")
 
         #creating button to add task
-        Button(master,text="add task",command=self.add_task).grid(row=2,column=0,columnspan=2,padx=5,pady=5)
+        Button(master,text="add task",command=self.add_task).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
 
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
-
 
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
         #creating variable for number of tasks for positioning 
         self.task_frames = {} #can be used for data saving later saves the object not frame
         self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
-        self.default_point_reward = 10
+
         
     #checks if the user has given the inputs
     def validate_input(self):
         task = self.user_tasks_entry.get()
         due_date = self.calander.get_date()
-        if task == "" or due_date == "": #checks if entries are empty and gives error message returns false for validation
-            messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
-            return False
+        current_time = time.time()
+
+        
         
         try:#chekcs if the duedate is in the correct format 
+            if task == "" or due_date == "": #checks if entries are empty and gives error message returns false for validation
+                messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
+                return False
             datetime.strptime(due_date, "%d/%m/%Y")  # raises ValueError if invalid
-        except ValueError:
+            due_time = time.mktime(time.strptime(due_date, "%d/%m/%Y"))
+            time_diff = due_time - current_time  
+            print(f"current time: {current_time} due_time: {due_time} time_diff: {time_diff}")
+            if time_diff < -86400:  #if the due date is in the past (1 day in seconds)
+                messagebox.showerror("Error", "Due date cannot be in the past.")
+                return False
+
+        except (ValueError,OverflowError):
             messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).") 
             return False #returns false for failed validation
 
@@ -80,10 +92,12 @@ class Tasks_screen:
 #function to add tasks 
     def add_task(self):
         if self.validate_input():
-            self.task = Task(self.user_tasks_entry.get(), self.calander.get_date(), self.num_of_tasks)  # Create a new instance of User_Task for each task added
+            self.task = Task(self.user_tasks_entry.get(), self.calander.get_date(), self.num_of_tasks,self.user_description_entry.get())  # Create a new instance of User_Task for each task added
             #saving information used for saving and creation/ deletion of tasks
             self.task_frames[self.num_of_tasks] = self.task
             self.num_of_tasks +=1 #increases by 1 for positioning
+            self.user_tasks_entry.delete(0, END)  # Clear the entry after adding the task
+            self.user_description_entry.delete(0, END)  # Clear the entry after adding the task
         else:
             pass
         
@@ -105,16 +119,16 @@ class Tasks_screen:
             time_diff = due_time - current_time  
             x = time_diff/100
             if time_diff < 0 or time_diff > 1209600:  #if the task is completed late or the task is completed more than 2 weeks early
-                return self.default_point_reward
+                return default_point_reward
             else:
-                return self.default_point_reward + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
+                return default_point_reward + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
                 
         except OverflowError:
-            return self.default_point_reward  #if the due date is too far in the future or past, just return the default point reward
+            return default_point_reward  #if the due date is too far in the future or past, just return the default point reward
 
 #class that manages each individual user's tasks and information
 class Task():
-        def __init__(self,task,due_date,position):
+        def __init__(self,task,due_date,position,description):
             #creating a frame for the task for all relevant task information
             self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75)
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
@@ -124,10 +138,12 @@ class Task():
             self.task = task
             self.due_date = due_date
             self.position = position
+            self.description = description
 
             #adds the task information for each task added
             Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
-            Label(self.task_frame,text=f"due: {self.due_date}").grid(row=1,column=0,sticky="nw")#label of of due 
+            Label(self.task_frame,text=f"due: {self.due_date}").grid(row=2,column=0,sticky="nw")#label of of due 
+            Label(self.task_frame,text=f"description:\n {self.description}",wraplength=400,justify="left").grid(row=1,column=0,sticky="nw")#label of of due 
             Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
             self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
@@ -355,7 +371,7 @@ class Main:
 def get_user_data(username):
     global user
     with open(r"userdata.json","r") as file:
-        users = json.load(file)
+        users = json.load(file) 
     print({users[username]["username"]})
     user = User_data(users[username]["username"],users[username]["password"],users)
 
@@ -411,6 +427,7 @@ root.geometry("700x700")
 width=700
 height=700
 min_age = 13
+default_point_reward =10
 main = Main(root)
 #instantiating tasks frame
 shop = Shop_screen(main.shop_frame)
