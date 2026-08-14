@@ -32,13 +32,13 @@ def time_to_sec(hour,minute,second):
 class Tasks_screen:
     def __init__(self,master):
         #setting canvas for tasks to go into
-        self.tasks_canvas = Canvas(master,width=400,height=300,bg="#C5C5C5",borderwidth=6)
+        self.tasks_canvas = Canvas(master,width=400,height=250,bg="#C5C5C5",borderwidth=6)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
-        self.tasks_frame = Frame(self.tasks_canvas,bg="#703535",width=500,height=300)
+        self.tasks_frame = Frame(self.tasks_canvas,bg="#703535",width=500,height=250)
 
         #creating the entry for user to add tasks
-        Label(master,text="task:").grid(row=1,column=0)
+        Label(master,text="task:").grid(row=1,column=0) 
         self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
         Label(master,text="description:").grid(row=2,column=0)
@@ -53,6 +53,8 @@ class Tasks_screen:
 
         #creating button to add task
         Button(master,text="add task",command=self.add_task).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
+        #button to remove all tasks
+        Button(master,text="clear all tasks",command=self.clear_frame).grid(row=5,column=0,padx=5,pady=5)
 
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
 
@@ -60,18 +62,22 @@ class Tasks_screen:
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
         #creating variable for number of tasks for positioning 
         self.task_frames = {} #can be used for data saving later saves the object not frame
-        self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
-
+        #self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
         
+    #creates the tasks saved from file
+    def display_existing_tasks(self): 
+         self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame       
+         for task_information in user.tasks_info.values():
+            self.task = Task(task_information["task_details"], task_information["due_date"], task_information["position"], task_information["description"])
+            self.task_frames[task_information["position"]] = self.task
+
     #checks if the user has given the inputs
     def validate_input(self):
         task = self.user_tasks_entry.get()
         due_date = self.calander.get_date()
         current_time = time.time()
 
-        
-        
-        try:#chekcs if the duedate is in the correct format 
+        try:#checks if the duedate is in the correct format 
             if task == "" or due_date == "": #checks if entries are empty and gives error message returns false for validation
                 messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
                 return False
@@ -82,49 +88,80 @@ class Tasks_screen:
             if time_diff < -86400:  #if the due date is in the past (1 day in seconds)
                 messagebox.showerror("Error", "Due date cannot be in the past.")
                 return False
-
         except (ValueError,OverflowError):
             messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).") 
             return False #returns false for failed validation
-
         return True
     
 #function to add tasks 
     def add_task(self):
         if self.validate_input():
+            self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
             self.task = Task(self.user_tasks_entry.get(), self.calander.get_date(), self.num_of_tasks,self.user_description_entry.get())  # Create a new instance of User_Task for each task added
             #saving information used for saving and creation/ deletion of tasks
             self.task_frames[self.num_of_tasks] = self.task
             self.num_of_tasks +=1 #increases by 1 for positioning
             self.user_tasks_entry.delete(0, END)  # Clear the entry after adding the task
             self.user_description_entry.delete(0, END)  # Clear the entry after adding the task
+            self.save_tasks()
         else:
             pass
-        
-    def complete_task(self, row):
-        # destroy every widget sitting in that row
+
+    def remove_task(self, row):
         task = self.task_frames.get(row)
         print(task)
         frame = task.task_frame 
         if frame is not None:
             frame.destroy()
             self.task_frames.pop(row, None)
-            # get the time of completion and compare with the time due to see if the task was completed on time or late and to calculate points to reward the user with
-            print(self.calc_points(task.due_date)) 
+                    
+    def complete_task(self, row):
+        # destroy every widget sitting in that row
+        task = self.task_frames.get(row)
+        self.remove_task(row)
+        # get the time of completion and compare with the time due to see if the task was completed on time or late and to calculate points to reward the user with
+        user.points += self.calc_points(task.due_date)
+        main.points_lbl.config(text=f"points: {user.points}")
 
     def calc_points(self,due):
         current_time = time.time()
         try:
             due_time = time.mktime(time.strptime(due, "%d/%m/%Y"))
             time_diff = due_time - current_time  
-            x = time_diff/100
-            if time_diff < 0 or time_diff > 1209600:  #if the task is completed late or the task is completed more than 2 weeks early
+            x = time_diff/100 #reduces the size of number so calculation wont become as large
+            if time_diff < 0 or time_diff > hprt:  #if the task is completed late or the task is completed more than 2 weeks early
                 return default_point_reward
             else:
                 return default_point_reward + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
                 
         except OverflowError:
             return default_point_reward  #if the due date is too far in the future or past, just return the default point reward
+    def clear_tasks(self):
+        for position in self.task_frames.keys():
+            task = self.task_frames.get(position)
+            frame = task.task_frame 
+            if frame is not None:
+                frame.destroy()
+
+    def clear_frame(self):
+        self.clear_tasks()
+        self.task_frames.clear()
+
+    def save_tasks(self):
+        task_information = {}
+        print(self.task_frames.values())
+        for t in self.task_frames.values():
+            print(f"a {t} a")
+            task_information[t.position] = {
+                "task_details": t.task,
+                "due_date": t.due_date,
+                "description": t.description,
+                "position": t.position
+            }
+        print(task_information)
+        user.tasks_info = task_information
+        print(user.tasks_info)
+
 
 #class that manages each individual user's tasks and information
 class Task():
@@ -138,14 +175,16 @@ class Task():
             self.task = task
             self.due_date = due_date
             self.position = position
+            print(self.position)
             self.description = description
 
             #adds the task information for each task added
             Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
             Label(self.task_frame,text=f"due: {self.due_date}").grid(row=2,column=0,sticky="nw")#label of of due 
             Label(self.task_frame,text=f"description:\n {self.description}",wraplength=400,justify="left").grid(row=1,column=0,sticky="nw")#label of of due 
-            Button(self.task_frame, text="X",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
-            self.task_frame.grid(row=tasks_screen.num_of_tasks,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
+            Button(self.task_frame, text="complete",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
+            Button(self.task_frame, text="remove",command=lambda r=self.position: tasks_screen.remove_task(r)).grid(row=1,column=3,sticky="ne") #button to remove task
+            self.task_frame.grid(row=self.position,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
 #class that manages the login screen
 class Login_screen:
@@ -228,9 +267,7 @@ class Login_screen:
                 "points":0,
                 "level":0,
                 "tasks":
-                    {"0":{"task_details":"",
-                    "due_date":"",
-                    "position":0}},
+                    {},
                 "shop_details":
                     {"item_name":
                         {"own":False,
@@ -246,7 +283,6 @@ class Login_screen:
                 main.level_lbl.config(text=f"level: {user.level}")
                 main.points_lbl.config(text=f"points: {user.points}")
                 main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
-
                 main.main_frame.lift()
         except ValueError:messagebox.showerror("age","your age must be an integer")
 
@@ -259,6 +295,7 @@ class Login_screen:
             main.level_lbl.config(text=f"level: {user.level}")
             main.points_lbl.config(text=f"points: {user.points}")
             main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
+            tasks_screen.display_existing_tasks()  # Display existing tasks after login
             main.main_frame.lift()
         else:
             messagebox.showerror("login failuire","username or password incorrect")
@@ -312,7 +349,6 @@ class Main:
         self.top_frame.columnconfigure(1,weight=8)
         self.top_frame.columnconfigure(2,weight=1)
         
-
         #creating a frame for menu buttons and image
         self.button_menu_frame = Frame(self.main_frame,width=100,bg="#d3d3d3")
         self.button_menu_frame.grid(row=0,column=0,sticky="nsew",rowspan=5)
@@ -329,7 +365,6 @@ class Main:
         self.tasks_frame.columnconfigure(2, weight=4)
         self.tasks_frame.columnconfigure(1, weight=1)
 
-        
         #adding in the user info for top frame
         self.username_lbl = Label(self.top_frame,text="username: UsernameUsernameUsername")
         self.points_lbl = Label(self.top_frame,text="points: 1000")
@@ -350,7 +385,7 @@ class Main:
         self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
         self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
         self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
-        self.close_button = Button(self.button_menu_frame, text="Close", command=self.root.destroy).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
+        self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
 
     def show_frame(self,frame):
@@ -366,6 +401,24 @@ class Main:
         login_screen.login_password_entry.delete(0,END)
         login_screen.login_username_entry.delete(0,END)
         login_screen.confirm_password_entry.delete(0,END)
+        tasks_screen.clear_tasks() #clears tasks when loggin out
+        self.save_user_data()#save user data when loggin out
+
+#saves user data to an external file
+    def save_user_data(self):
+        tasks_screen.save_tasks()  # Save tasks before saving user data
+        with open(r"userdata.json","r") as file:
+            users = json.load(file)
+        users[user.username]["points"] = user.points
+        users[user.username]["level"] = user.level
+        users[user.username]["tasks"] = user.tasks_info
+        users[user.username]["shop_details"] = user.shop_details
+        with open(r"userdata.json","w") as file:
+            json.dump(users,file,indent=4)
+
+    def close_program(self):
+        self.save_user_data()  # Save user data before closing the program
+        root.destroy()
 
 #function that gets user data from external file
 def get_user_data(username):
@@ -375,9 +428,6 @@ def get_user_data(username):
     print({users[username]["username"]})
     user = User_data(users[username]["username"],users[username]["password"],users)
 
-#function that saves userdata to external file
-def save_user_date(username):
-    pass
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
@@ -428,6 +478,7 @@ width=700
 height=700
 min_age = 13
 default_point_reward =10
+hprt = 1209600 # highest points rewarded time, (2weeks in seconds)
 main = Main(root)
 #instantiating tasks frame
 shop = Shop_screen(main.shop_frame)
