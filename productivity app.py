@@ -121,7 +121,9 @@ class Tasks_screen:
         self.remove_task(row)
         # get the time of completion and compare with the time due to see if the task was completed on time or late and to calculate points to reward the user with
         user.points += self.calc_points(task.due_date)
+        user.exp += self.calc_points(task.due_date)
         main.points_lbl.config(text=f"points: {user.points}")
+        main.update_level()
 
     def calc_points(self,due):
         current_time = time.time()
@@ -161,7 +163,6 @@ class Tasks_screen:
         print(task_information)
         user.tasks_info = task_information
         print(user.tasks_info)
-
 
 #class that manages each individual user's tasks and information
 class Task():
@@ -266,6 +267,7 @@ class Login_screen:
                 "password":password,
                 "points":0,
                 "level":0,
+                "exp": 0,
                 "tasks":
                     {},
                 "shop_details":
@@ -294,7 +296,7 @@ class Login_screen:
             main.username_lbl.config(text=f"username: {user.username}")
             main.level_lbl.config(text=f"level: {user.level}")
             main.points_lbl.config(text=f"points: {user.points}")
-            main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
+            main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
             tasks_screen.display_existing_tasks()  # Display existing tasks after login
             main.main_frame.lift()
         else:
@@ -323,6 +325,7 @@ class User_data:
         self.username = username
         self.password = password
         self.points = user_data[username]["points"]
+        self.exp = user_data[username]["exp"]
         self.level = user_data[username]["level"]
         self.tasks_info = user_data[username]["tasks"]
         self.shop_details = user_data[username]["shop_details"]
@@ -411,6 +414,7 @@ class Main:
             users = json.load(file)
         users[user.username]["points"] = user.points
         users[user.username]["level"] = user.level
+        users[user.username]["exp"] = user.exp
         users[user.username]["tasks"] = user.tasks_info
         users[user.username]["shop_details"] = user.shop_details
         with open(r"userdata.json","w") as file:
@@ -420,6 +424,22 @@ class Main:
         self.save_user_data()  # Save user data before closing the program
         root.destroy()
 
+    def next_level_calc(self,level):
+        if level >= 0:
+            exp = 50 + level*50**1.1
+        else:
+            exp = 50
+        return int(exp)
+
+    def update_level(self):
+        if user.exp >= self.next_level_calc(user.level):
+            user.exp -= self.next_level_calc(user.level)
+            user.level += 1
+            main.level_lbl.config(text=f"level: {user.level}")
+            main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
+        else:
+            main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
+
 #function that gets user data from external file
 def get_user_data(username):
     global user
@@ -427,6 +447,8 @@ def get_user_data(username):
         users = json.load(file) 
     print({users[username]["username"]})
     user = User_data(users[username]["username"],users[username]["password"],users)
+
+
 
 
 #function to add a scroll bar to a canvas    
@@ -472,7 +494,7 @@ def add_scroll_bar(canvas,frame):
 #setting up the root
 root = Tk()
 root.title("productivity manager")
-root.geometry("700x700")
+root.geometry("700x700") 
 #variables for width and heigth of window used for sizing frames
 width=700
 height=700

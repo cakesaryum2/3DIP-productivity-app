@@ -4,12 +4,46 @@
         "password": "",
         "points": 0,
         "level": 0,
+        "exp": 0,
         "tasks": {
             "0": {
                 "task_details": "",
                 "due_date": "",
                 "description": "",
                 "position": 0
+            }
+        },
+        "shop_details": {
+            "item_name": {
+                "own": false,
+                "equiped": false
+            }
+        }
+    },
+    "": {
+        "username": "",
+        "password": "",
+        "points": 836,
+        "level": 4,
+        "exp": 191,
+        "tasks": {
+            "6": {
+                "task_details": "so",
+                "due_date": "14/08/2026",
+                "description": "",
+                "position": 6
+            },
+            "7": {
+                "task_details": "so now hwat",
+                "due_date": "14/08/2026",
+                "description": "",
+                "position": 7
+            },
+            "8": {
+                "task_details": "hopefully it works now",
+                "due_date": "14/08/2026",
+                "description": "",
+                "position": 8
             }
         },
         "shop_details": {
