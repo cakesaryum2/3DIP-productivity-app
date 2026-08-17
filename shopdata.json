@@ -1,0 +1,12 @@
+[{"item":"item",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\Chicken starver.PNG"},
+{"item":"item2",
+"price":50,
+"type":"colour",
+"description":"This is a test of the colour scheme system for the shop",
+"display":"hex code",
+"primary":"hex code", 
+"secondary":"hex code"}]

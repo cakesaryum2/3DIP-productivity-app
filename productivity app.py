@@ -6,6 +6,7 @@ import os
 import time
 from datetime import datetime
 import json
+from PIL import Image, ImageTk
 #making sure the current directory is the same as the file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -54,7 +55,7 @@ class Tasks_screen:
         #creating button to add task
         Button(master,text="add task",command=self.add_task).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
         #button to remove all tasks
-        Button(master,text="clear all tasks",command=self.clear_frame).grid(row=5,column=0,padx=5,pady=5)
+        Button(master,text="clear all tasks",command=self.clear_task_data).grid(row=5,column=0,padx=5,pady=5)
 
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
 
@@ -107,6 +108,7 @@ class Tasks_screen:
         else:
             pass
 
+#function that removes task from task screen
     def remove_task(self, row):
         task = self.task_frames.get(row)
         print(task)
@@ -114,7 +116,8 @@ class Tasks_screen:
         if frame is not None:
             frame.destroy()
             self.task_frames.pop(row, None)
-                    
+
+#function that removes and completes tasks from tasks screen (rewards users)           
     def complete_task(self, row):
         # destroy every widget sitting in that row
         task = self.task_frames.get(row)
@@ -125,6 +128,7 @@ class Tasks_screen:
         main.points_lbl.config(text=f"points: {user.points}")
         main.update_level()
 
+#function that calculates the points rewarded
     def calc_points(self,due):
         current_time = time.time()
         try:
@@ -138,6 +142,8 @@ class Tasks_screen:
                 
         except OverflowError:
             return default_point_reward  #if the due date is too far in the future or past, just return the default point reward
+
+#function that clears all tasks from tasks screen without removing task data 
     def clear_tasks(self):
         for position in self.task_frames.keys():
             task = self.task_frames.get(position)
@@ -145,10 +151,12 @@ class Tasks_screen:
             if frame is not None:
                 frame.destroy()
 
-    def clear_frame(self):
+#function that clears all tasks data and tasks from task screen
+    def clear_task_data(self):
         self.clear_tasks()
         self.task_frames.clear()
 
+#function that saves tasks to user information for data saving
     def save_tasks(self):
         task_information = {}
         print(self.task_frames.values())
@@ -280,11 +288,12 @@ class Login_screen:
                 with open(r"userdata.json","w") as file:
                     json.dump(users,file,indent=4)
                 get_user_data(username)
-
+                #loading user data to new account
                 main.username_lbl.config(text=f"username: {user.username}")
                 main.level_lbl.config(text=f"level: {user.level}")
                 main.points_lbl.config(text=f"points: {user.points}")
                 main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
+                shop_screen.create_items() #creates item in the shop
                 main.main_frame.lift()
         except ValueError:messagebox.showerror("age","your age must be an integer")
 
@@ -298,6 +307,7 @@ class Login_screen:
             main.points_lbl.config(text=f"points: {user.points}")
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
             tasks_screen.display_existing_tasks()  # Display existing tasks after login
+            shop_screen.create_items() #creates items in the shop
             main.main_frame.lift()
         else:
             messagebox.showerror("login failuire","username or password incorrect")
@@ -317,8 +327,69 @@ class Login_screen:
 #class that manages the shop screen
 class Shop_screen:
     def __init__(self,master):
+        self.items = {}
         Label(master,text="shop").grid(row=0,column=0)
+        self.shop_canvas = Canvas(master,width=320,height=500,bg="#C5C5C5",borderwidth=6)
+        self.shop_canvas.grid(row=2,column=0,columnspan=3,sticky="nsew",pady=5,padx=5)
+        self.shop_frame = Frame(self.shop_canvas,bg="#E08B8B",width=320,height=500)
+        self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
+        Button(master,text="close",command=lambda: main.show_frame(0)).grid(row=3,column=0,sticky="sw")
 
+    def create_items(self):
+        with open("shopdata.json","r") as file:
+            shop_data = json.load(file)
+        for item_data in shop_data:
+            item = Items(item_data["item"],item_data["price"],item_data["description"],item_data["type"],display=item_data["display"])
+            self.items[item_data["item"]] = item
+            print(self.items)
+
+class Items:
+    def __init__(self,item_name,price,description,type,display):
+        self.item_name = item_name
+        self.price = price
+        self.description = description
+        self.display = display #displays preview of item, either image for profile or colour for colour scheme
+        try:
+            self.own = user.shop_details[item_name]["own"]
+            self.equiped = user.shop_details[item_name]["equiped"]
+        except KeyError:
+            user.shop_details[item_name] = {
+                "own": False,
+                "equiped": False}
+            self.own = False
+            self.equiped = False
+            #pass #create new item save
+        self.item_frame = Frame(shop_screen.shop_frame,width = 320,height = 100)
+        self.item_frame.columnconfigure(2,weight=1)
+        Label(self.item_frame,text=self.item_name).grid(row=0,column=1,sticky="w")
+        Label(self.item_frame,text=self.description,wraplength=200,justify="left").grid(row=1,column=1,sticky="w")
+        Label(self.item_frame,text=f"cost: {self.price}").grid(row=2,column=1,sticky="w")
+        display_frame = Frame(self.item_frame,width=75,height=75,bg="#5dcf9d")
+        display_frame.grid(row=0,rowspan=3,column=0)
+        if type == "colour":
+            pass
+        elif type == "profile":
+            img = Image.open(self.display)
+            img = img.resize((75, 75)) #resizing image to fit
+            image = ImageTk.PhotoImage(img)
+            label = Label(display_frame,image=image)
+            label.image = image
+            label.pack()
+        self.check_item()
+        self.item_frame.pack(pady=5,padx=2)
+        self.item_frame.grid_propagate(False)
+        print(item_name)
+
+    def check_item(self):
+        if self.own:
+            if self.equiped:
+                Button(self.item_frame,text="unequip").grid(row=1,rowspan=3,column=3)
+            else:
+                Button(self.item_frame,text="equip").grid(row=1,rowspan=3,column=3)
+        else:
+            Button(self.item_frame,text="buy").grid(row=1,rowspan=3,column=3)
+        
+        
 #class that holds the user data and information for the user
 class User_data:
     def __init__(self,username,password,user_data):
@@ -404,15 +475,16 @@ class Main:
         login_screen.login_password_entry.delete(0,END)
         login_screen.login_username_entry.delete(0,END)
         login_screen.confirm_password_entry.delete(0,END)
-        tasks_screen.clear_tasks() #clears tasks when loggin out
         self.save_user_data()#save user data when loggin out
+        tasks_screen.clear_task_data() #clears tasks when loggin out
+        
 
 #saves user data to an external file
     def save_user_data(self):
         tasks_screen.save_tasks()  # Save tasks before saving user data
         with open(r"userdata.json","r") as file:
             users = json.load(file)
-        users[user.username]["points"] = user.points
+        users[user.username]["points"] = user.points #updating all information for saving
         users[user.username]["level"] = user.level
         users[user.username]["exp"] = user.exp
         users[user.username]["tasks"] = user.tasks_info
@@ -447,9 +519,6 @@ def get_user_data(username):
         users = json.load(file) 
     print({users[username]["username"]})
     user = User_data(users[username]["username"],users[username]["password"],users)
-
-
-
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
@@ -490,7 +559,6 @@ def add_scroll_bar(canvas,frame):
     canvas.bind_all("<Shift-MouseWheel>", on_shift_mouse_wheel)
     frame.bind("<Configure>", delayed_update)
        
-
 #setting up the root
 root = Tk()
 root.title("productivity manager")
@@ -500,10 +568,11 @@ width=700
 height=700
 min_age = 13
 default_point_reward =10
+default_profile = r"images\chicken starver.PNG"
 hprt = 1209600 # highest points rewarded time, (2weeks in seconds)
 main = Main(root)
 #instantiating tasks frame
-shop = Shop_screen(main.shop_frame)
+shop_screen = Shop_screen(main.shop_frame)
 tasks_screen = Tasks_screen(main.tasks_frame)
 login_screen = Login_screen(main.root)
 
