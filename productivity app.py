@@ -56,14 +56,10 @@ class Tasks_screen:
         Button(master,text="add task",command=self.add_task).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
         #button to remove all tasks
         Button(master,text="clear all tasks",command=self.clear_task_data).grid(row=5,column=0,padx=5,pady=5)
-
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
-
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
-        #creating variable for number of tasks for positioning 
-        self.task_frames = {} #can be used for data saving later saves the object not frame
-        #self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame
+        self.task_frames = {} #used for saving each task object
         
     #creates the tasks saved from file
     def display_existing_tasks(self): 
@@ -85,13 +81,12 @@ class Tasks_screen:
             datetime.strptime(due_date, "%d/%m/%Y")  # raises ValueError if invalid
             due_time = time.mktime(time.strptime(due_date, "%d/%m/%Y"))
             time_diff = due_time - current_time  
-            print(f"current time: {current_time} due_time: {due_time} time_diff: {time_diff}")
             if time_diff < -86400:  #if the due date is in the past (1 day in seconds)
                 messagebox.showerror("Error", "Due date cannot be in the past.")
                 return False
         except (ValueError,OverflowError):
             messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).") 
-            return False #returns false for failed validation
+            return False 
         return True
     
 #function to add tasks 
@@ -103,7 +98,7 @@ class Tasks_screen:
             self.task_frames[self.num_of_tasks] = self.task
             self.num_of_tasks +=1 #increases by 1 for positioning
             self.user_tasks_entry.delete(0, END)  # Clear the entry after adding the task
-            self.user_description_entry.delete(0, END)  # Clear the entry after adding the task
+            self.user_description_entry.delete(0, END)  
             self.save_tasks()
         else:
             pass
@@ -111,7 +106,6 @@ class Tasks_screen:
 #function that removes task from task screen
     def remove_task(self, row):
         task = self.task_frames.get(row)
-        print(task)
         frame = task.task_frame 
         if frame is not None:
             frame.destroy()
@@ -135,13 +129,12 @@ class Tasks_screen:
             due_time = time.mktime(time.strptime(due, "%d/%m/%Y"))
             time_diff = due_time - current_time  
             x = time_diff/100 #reduces the size of number so calculation wont become as large
-            if time_diff < 0 or time_diff > hprt:  #if the task is completed late or the task is completed more than 2 weeks early
-                return default_point_reward
+            if time_diff < 0 or time_diff > HPRT:  #if the task is completed late or the task is completed more than 2 weeks early
+                return DEFAULT_POINT_REWARD
             else:
-                return default_point_reward + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
-                
+                return DEFAULT_POINT_REWARD + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
         except OverflowError:
-            return default_point_reward  #if the due date is too far in the future or past, just return the default point reward
+            return DEFAULT_POINT_REWARD  #if the due date is too far in the future or past, just return the default point reward
 
 #function that clears all tasks from tasks screen without removing task data 
     def clear_tasks(self):
@@ -159,18 +152,13 @@ class Tasks_screen:
 #function that saves tasks to user information for data saving
     def save_tasks(self):
         task_information = {}
-        print(self.task_frames.values())
         for t in self.task_frames.values():
-            print(f"a {t} a")
             task_information[t.position] = {
                 "task_details": t.task,
                 "due_date": t.due_date,
                 "description": t.description,
-                "position": t.position
-            }
-        print(task_information)
+                "position": t.position}
         user.tasks_info = task_information
-        print(user.tasks_info)
 
 #class that manages each individual user's tasks and information
 class Task():
@@ -180,11 +168,9 @@ class Task():
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
             self.task_frame.columnconfigure(0,minsize=300)
             self.task_frame.columnconfigure(2,weight=1)
-
             self.task = task
             self.due_date = due_date
             self.position = position
-            print(self.position)
             self.description = description
 
             #adds the task information for each task added
@@ -210,7 +196,7 @@ class Login_screen:
         self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=2,column=1,padx=5,pady=5)
 
         #frame for the login
-        self.login_frame = Frame(master,bg="#FA2727",width=width-100,height=200)
+        self.login_frame = Frame(master,bg="#FA2727",width=600,height=200)
         self.login_frame.grid(row=0,column=0,sticky="nsew")
         self.login_frame.columnconfigure(0,weight=1)
         self.login_frame.columnconfigure(3,weight=1)
@@ -220,7 +206,7 @@ class Login_screen:
         Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
         self.login_username_entry = Entry(self.login_frame)
         self.login_username_entry.grid(row=1,column=2,padx=5,pady=5)
-        self.login_password_entry = Entry(self.login_frame)
+        self.login_password_entry = Entry(self.login_frame,show="*")
         self.login_password_entry.grid(row=2,column=2,padx=5,pady=5)
         Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
         Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
@@ -228,7 +214,7 @@ class Login_screen:
         Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
 
         #frame for the signup 
-        self.signup_frame = Frame(master,bg="#E127FA",width=width-100,height=height-50)
+        self.signup_frame = Frame(master,bg="#E127FA",width=600,height=650)
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
         self.signup_frame.columnconfigure(0,weight=1)
         self.signup_frame.columnconfigure(3,weight=1)
@@ -241,9 +227,9 @@ class Login_screen:
         self.signup_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.age_entry = Entry(self.signup_frame)
         self.age_entry.grid(row=2,column=2,padx=5,pady=5)
-        self.signup_password_entry = Entry(self.signup_frame)
+        self.signup_password_entry = Entry(self.signup_frame,show="*")
         self.signup_password_entry.grid(row=3,column=2,padx=5,pady=5)
-        self.confirm_password_entry = Entry(self.signup_frame)
+        self.confirm_password_entry = Entry(self.signup_frame,show="*")
         self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
         Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
         Button(self.signup_frame,text="signup",command=self.signup).grid(row=5,column=2,padx=5,pady=5)
@@ -259,10 +245,9 @@ class Login_screen:
         confirm_password = self.confirm_password_entry.get()
         with open(r"userdata.json","r") as file:
             users = json.load(file)
-        #chekcing if the username exists already(add when saving is created)
-        #checking if age is valid (minimum age is 13+)
+        #checking if inputs are valid  (minimum age is 13+)
         try:
-            if int(age)<min_age:
+            if int(age)<MIN_AGE:
                 messagebox.showerror("age not valid","you must be 13 or older to register an account")
             #checking that each password is the same
             elif password != confirm_password:
@@ -276,8 +261,7 @@ class Login_screen:
                 "points":0,
                 "level":0,
                 "exp": 0,
-                "tasks":
-                    {},
+                "tasks": {},
                 "shop_details":
                     {"item_name":
                         {"own":False,
@@ -307,10 +291,13 @@ class Login_screen:
             main.points_lbl.config(text=f"points: {user.points}")
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
             tasks_screen.display_existing_tasks()  # Display existing tasks after login
+            img = Image.open(DEFAULT_PROFILE)
+            img = img.resize((75, 75)) #resizing image to fit
+            self.image = ImageTk.PhotoImage(img)
+            main.image_label.config(image=self.image)
             shop_screen.create_items() #creates items in the shop
             main.main_frame.lift()
-        else:
-            messagebox.showerror("login failuire","username or password incorrect")
+        else: messagebox.showerror("login failuire","username or password incorrect")
 
     def validate_login(self,username,password):
         with open(r"userdata.json","r") as file:
@@ -319,10 +306,8 @@ class Login_screen:
                 if password == users[username]["password"]:
                     get_user_data(username)
                     return True
-                else:
-                    return False
-            else:
-                return False
+                else: return False
+            else: return False
 
 #class that manages the shop screen
 class Shop_screen:
@@ -334,20 +319,27 @@ class Shop_screen:
         self.shop_frame = Frame(self.shop_canvas,bg="#E08B8B",width=320,height=500)
         self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
         Button(master,text="close",command=lambda: main.show_frame(0)).grid(row=3,column=0,sticky="sw")
-
+        add_scroll_bar(self.shop_canvas,self.shop_frame)
+#function that creates each shop item
     def create_items(self):
         with open("shopdata.json","r") as file:
             shop_data = json.load(file)
         for item_data in shop_data:
             item = Items(item_data["item"],item_data["price"],item_data["description"],item_data["type"],display=item_data["display"])
             self.items[item_data["item"]] = item
-            print(self.items)
 
+    def clear_shop(self):
+        for item in self.shop_frame.winfo_children():#gets all children from frame
+            item.destroy() 
+        self.items.clear()#clear the shop data
+
+#class that handles each shop item
 class Items:
     def __init__(self,item_name,price,description,type,display):
         self.item_name = item_name
         self.price = price
-        self.description = description
+        self.description = description 
+        self.type = type
         self.display = display #displays preview of item, either image for profile or colour for colour scheme
         try:
             self.own = user.shop_details[item_name]["own"]
@@ -358,37 +350,82 @@ class Items:
                 "equiped": False}
             self.own = False
             self.equiped = False
-            #pass #create new item save
-        self.item_frame = Frame(shop_screen.shop_frame,width = 320,height = 100)
-        self.item_frame.columnconfigure(2,weight=1)
+
+        self.item_frame = Frame(shop_screen.shop_frame,width = 300,height = 100)
+        self.item_frame.columnconfigure(3,weight=1)
         Label(self.item_frame,text=self.item_name).grid(row=0,column=1,sticky="w")
-        Label(self.item_frame,text=self.description,wraplength=200,justify="left").grid(row=1,column=1,sticky="w")
+        Label(self.item_frame,text=self.description,wraplength=150,justify="left").grid(row=1,column=1,sticky="w")
         Label(self.item_frame,text=f"cost: {self.price}").grid(row=2,column=1,sticky="w")
         display_frame = Frame(self.item_frame,width=75,height=75,bg="#5dcf9d")
         display_frame.grid(row=0,rowspan=3,column=0)
-        if type == "colour":
-            pass
-        elif type == "profile":
+        if self.type == "colour":
+            display_frame.config(bg=display[0]) #display 0 gets display colour
+        elif self.type == "profile":
             img = Image.open(self.display)
             img = img.resize((75, 75)) #resizing image to fit
             image = ImageTk.PhotoImage(img)
             label = Label(display_frame,image=image)
             label.image = image
             label.pack()
+        self.item_btn = Button(self.item_frame,text="")
+        self.item_btn.grid(row=1,rowspan=3,column=3,sticky="e")
         self.check_item()
         self.item_frame.pack(pady=5,padx=2)
         self.item_frame.grid_propagate(False)
-        print(item_name)
 
     def check_item(self):
         if self.own:
             if self.equiped:
-                Button(self.item_frame,text="unequip").grid(row=1,rowspan=3,column=3)
+                self.equip_item()
+                self.item_btn.config(text = "unequip",command=self.unequip_item)
             else:
-                Button(self.item_frame,text="equip").grid(row=1,rowspan=3,column=3)
+                #Button(self.item_frame,text="equip").grid(row=1,rowspan=3,column=3,sticky="e")
+                self.item_btn.config(text = "equip",command=self.equip_item)
         else:
-            Button(self.item_frame,text="buy").grid(row=1,rowspan=3,column=3)
-        
+            #Button(self.item_frame,text="buy").grid(row=1,rowspan=3,column=3,sticky="e")  
+            self.item_btn.config(text = "buy",command=self.buy_item)
+    def buy_item(self):
+        #reduce points and update, change buy to equip
+        if user.points >= self.price:
+            user.points = user.points - self.price
+            main.points_lbl.config(text=f"points: {user.points}")
+            self.item_btn.config(text = "equip",command=self.equip_item)
+            user.shop_details[self.item_name]["own"] = True
+        else: messagebox.showerror("not enough points","You do not have enough points to afford this item")
+
+    def equip_item(self):
+        for i in shop_screen.items.values():
+            print(i)
+            print(f"{i.item_name},{i.equiped}")
+            print(i.equiped)
+            print('asd')
+            print(i.own)
+            print("-----------------------------------------------")
+            if i.item_name != self.item_name and i.equiped == True and i.own == True:
+                if self.type and i.type == "profile":
+                    i.equiped = False
+                    user.shop_details[i.item_name]["equiped"] = False
+                    i.item_btn.config(text = "equip",command=i.equip_item)
+        #apply item and change to unequip
+        self.item_btn.config(text = "unequip",command=self.unequip_item)
+        user.shop_details[self.item_name]["equiped"] = True
+        self.equiped=True
+        if self.type == "profile":
+            img = Image.open(self.display)
+            img = img.resize((75, 75)) #resizing image to fit
+            self.image = ImageTk.PhotoImage(img)
+            main.image_label.config(image=self.image)
+
+    def unequip_item(self):
+        #removes item and defaults if nothing else is applied
+        self.item_btn.config(text = "equip",command=self.equip_item)
+        user.shop_details[self.item_name]["equiped"] = False
+        self.equiped = False
+        if self.type == "profile":
+            img = Image.open(DEFAULT_PROFILE)
+            img = img.resize((75, 75)) #resizing image to fit
+            self.image = ImageTk.PhotoImage(img)
+            main.image_label.config(image=self.image)
         
 #class that holds the user data and information for the user
 class User_data:
@@ -412,7 +449,6 @@ class Main:
         self.main_frame.grid(column=0,row=0)
         self.main_frame.rowconfigure(1, weight=1)
         self.main_frame.columnconfigure(1, weight=1)
-        
         self.main_frame.grid_propagate(False)
 
         #creating frame for title and user information
@@ -440,11 +476,10 @@ class Main:
         self.tasks_frame.columnconfigure(1, weight=1)
 
         #adding in the user info for top frame
-        self.username_lbl = Label(self.top_frame,text="username: UsernameUsernameUsername")
-        self.points_lbl = Label(self.top_frame,text="points: 1000")
-        self.level_lbl = Label(self.top_frame,text="level: 3")
-        self.next_level_lbl = Label(self.top_frame,text="Next lvl: 1000/10000")
-
+        self.username_lbl = Label(self.top_frame,text="username: ")
+        self.points_lbl = Label(self.top_frame,text="points: ")
+        self.level_lbl = Label(self.top_frame,text="level: ")
+        self.next_level_lbl = Label(self.top_frame,text="Next lvl: ")
         self.username_lbl.grid(row=0,column=0,sticky="w",padx=5,pady=2)
         self.points_lbl.grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
         self.level_lbl.grid(row=1,column=0,sticky="w",padx=5,pady=2)
@@ -453,6 +488,12 @@ class Main:
         #adding frame for user image
         image_frame = Frame(self.button_menu_frame,width=100,height=100)
         image_frame.grid(row=0,column=0,pady=5)
+        # img = Image.open(DEFAULT_PROFILE)
+        # img = img.resize((75, 75)) #resizing image to fit
+        # image = ImageTk.PhotoImage(img)
+        self.image_label = Label(image_frame)
+        #self.image_label.image = image
+        self.image_label.pack()
 
         #creating the buttons for the menu
         self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
@@ -461,7 +502,7 @@ class Main:
         self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
         self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
-
+    #shows frame
     def show_frame(self,frame):
         frames = [self.tasks_frame,self.shop_frame]
         frames[frame].lift()
@@ -477,8 +518,8 @@ class Main:
         login_screen.confirm_password_entry.delete(0,END)
         self.save_user_data()#save user data when loggin out
         tasks_screen.clear_task_data() #clears tasks when loggin out
+        shop_screen.clear_shop() #clears all tkinter widgets form the shop
         
-
 #saves user data to an external file
     def save_user_data(self):
         tasks_screen.save_tasks()  # Save tasks before saving user data
@@ -517,7 +558,6 @@ def get_user_data(username):
     global user
     with open(r"userdata.json","r") as file:
         users = json.load(file) 
-    print({users[username]["username"]})
     user = User_data(users[username]["username"],users[username]["password"],users)
 
 #function to add a scroll bar to a canvas    
@@ -541,7 +581,7 @@ def add_scroll_bar(canvas,frame):
             content_width = bbox[2] - bbox[0]
             content_height = bbox[3] - bbox[1]
             can_scroll_verticaly[0] = content_height > canvas_height
-            can_scroll_horizontaly[0] = content_width > canvas_width
+            can_scroll_horizontaly[0] = content_width > canvas_width       
     def delayed_update(event=None):
         canvas.after(50, update_scroll_flags)
     #moving the canvas
@@ -554,27 +594,28 @@ def add_scroll_bar(canvas,frame):
     def on_shift_mouse_wheel(event):
         if can_scroll_horizontaly[0]:
             canvas.xview_scroll(-int(event.delta / 50), "units")
-    #moving the canvas
-    canvas.bind_all("<MouseWheel>", on_mouse_wheel)
-    canvas.bind_all("<Shift-MouseWheel>", on_shift_mouse_wheel)
+    #binds the mouse to the scroll bar when over the canvas
+    def bind_wheel(event=None):
+        canvas.bind_all("<MouseWheel>", on_mouse_wheel)
+        canvas.bind_all("<Shift-MouseWheel>", on_shift_mouse_wheel)
+    #checks for when cursor is in the canvas and binds mouse to it
+    canvas.bind("<Enter>", bind_wheel)
     frame.bind("<Configure>", delayed_update)
        
 #setting up the root
 root = Tk()
 root.title("productivity manager")
 root.geometry("700x700") 
-#variables for width and heigth of window used for sizing frames
-width=700
-height=700
-min_age = 13
-default_point_reward =10
-default_profile = r"images\chicken starver.PNG"
-hprt = 1209600 # highest points rewarded time, (2weeks in seconds)
-main = Main(root)
-#instantiating tasks frame
+#constant variables
+MIN_AGE = 13
+DEFAULT_POINT_REWARD =10
+DEFAULT_PROFILE = r"images\chicken starver.PNG"
+HPRT = 1209600 # highest points rewarded time, (2weeks in seconds)
+main = Main(root) #creating the main root
+#instantiating frames
 shop_screen = Shop_screen(main.shop_frame)
 tasks_screen = Tasks_screen(main.tasks_frame)
 login_screen = Login_screen(main.root)
-
 root.mainloop()
 
+"""first loading results in default equiped and after logging out then image no longer shows on login"""

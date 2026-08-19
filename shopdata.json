@@ -1,12 +1,41 @@
-[{"item":"item",
+[{"item":"octo",
 "price":30,
 "description":"This is a test of the profile system from the shop",
 "type":"profile",
-"display":"images\\Chicken starver.PNG"},
+"display":"images\\octo_profile.png"},
+
+{"item":"bee",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\bee_profile.PNG"},
+
+{"item":"cloud",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\cloud_profile.PNG"},
+
+{"item":"duck",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\duck_profile.PNG"},
+
+{"item":"flower",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\flower_profile.PNG"},
+
+{"item":"popsicle",
+"price":30,
+"description":"This is a test of the profile system from the shop",
+"type":"profile",
+"display":"images\\posicle_profile.PNG"},
+
 {"item":"item2",
 "price":50,
 "type":"colour",
 "description":"This is a test of the colour scheme system for the shop",
-"display":"hex code",
-"primary":"hex code", 
-"secondary":"hex code"}]
+"display":["#ffffff", "primary hex code", "ssecondary hex code"]}]
