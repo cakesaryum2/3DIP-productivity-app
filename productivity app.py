@@ -32,6 +32,9 @@ def time_to_sec(hour,minute,second):
 #class that manages the tasks and task information
 class Tasks_screen:
     def __init__(self,master):
+        self.task_frames = {} #used for saving each task object
+        self.create_task_screen(master)
+    def create_task_screen(self,master):
         #setting canvas for tasks to go into
         self.tasks_canvas = Canvas(master,width=400,height=250,bg=secondary_colour,borderwidth=6)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
@@ -59,7 +62,7 @@ class Tasks_screen:
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
-        self.task_frames = {} #used for saving each task object
+
         
     #creates the tasks saved from file
     def display_existing_tasks(self): 
@@ -159,7 +162,6 @@ class Tasks_screen:
                 "description": t.description,
                 "position": t.position}
         user.tasks_info = task_information
-
 #class that manages each individual user's tasks and information
 class Task:
         def __init__(self,task,due_date,position,description):
@@ -272,11 +274,13 @@ class Login_screen:
                 with open(r"userdata.json","w") as file:
                     json.dump(users,file,indent=4)
                 get_user_data(username)
-                #loading user data to new account
-                main.username_lbl.config(text=f"username: {user.username}")
-                main.level_lbl.config(text=f"level: {user.level}")
-                main.points_lbl.config(text=f"points: {user.points}")
-                main.next_level_lbl.config(text=f"Next lvl: {user.points}/10000")
+                
+                #creating the new profile gui
+                img = Image.open(DEFAULT_PROFILE)
+                img = img.resize((75, 75)) 
+                self.image = ImageTk.PhotoImage(img)
+                main.image_label.config(image=self.image)
+                main.update_user_info_display()
                 shop_screen.create_items() #creates item in the shop
                 main.main_frame.lift()
         except ValueError:messagebox.showerror("age","your age must be an integer")
@@ -286,16 +290,14 @@ class Login_screen:
         password = self.login_password_entry.get()
         #checks if username exists and gets the password if it does and if password exists
         if self.validate_login(username,password):
-            main.username_lbl.config(text=f"username: {user.username}")
-            main.level_lbl.config(text=f"level: {user.level}")
-            main.points_lbl.config(text=f"points: {user.points}")
-            main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
+            main.update_user_info_display() #updates user information
             tasks_screen.display_existing_tasks()  # Display existing tasks after login
             img = Image.open(DEFAULT_PROFILE)
-            img = img.resize((75, 75)) #resizing image to fit
+            img = img.resize((75, 75)) 
             self.image = ImageTk.PhotoImage(img)
             main.image_label.config(image=self.image)
             shop_screen.create_items() #creates items in the shop
+            shop_screen.apply_theme() #applies any themes the user has
             main.main_frame.lift()
         else: messagebox.showerror("login failuire","username or password incorrect")
 
@@ -313,6 +315,9 @@ class Login_screen:
 class Shop_screen:
     def __init__(self,master):
         self.items = {}
+        self.create_shop_screen(master)
+    def create_shop_screen(self,master):
+        #self.creating_shop = False
         Label(master,text="shop",font=("Arial", 20),bg=secondary_colour,fg=text_colour).grid(row=0,column=0,columnspan=2)
         self.shop_canvas = Canvas(master,width=320,height=500,bg=secondary_colour)
         self.shop_canvas.grid(row=2,column=0,columnspan=3,sticky="nsew",pady=5,padx=5)
@@ -320,6 +325,7 @@ class Shop_screen:
         self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
         Button(master,text="close",command=lambda: main.show_frame(0),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="sw")
         add_scroll_bar(self.shop_canvas,self.shop_frame)
+        #self.creating_shop = False
 #function that creates each shop item
     def create_items(self):
         with open("shopdata.json","r") as file:
@@ -333,6 +339,22 @@ class Shop_screen:
             item.destroy() 
         self.items.clear()#clear the shop data
 
+    def apply_theme(self):
+        for x in main.shop_frame.winfo_children():
+            x.destroy()
+        for x in main.tasks_frame.winfo_children():
+            x.destroy()
+        for x in main.main_frame.winfo_children():
+            x.destroy()
+        shop_screen.items.clear()
+        tasks_screen.task_frames.clear()
+        main.create_main_frames()
+        tasks_screen.create_task_screen(main.tasks_frame) 
+        tasks_screen.display_existing_tasks()
+        main.update_user_info_display()
+        shop_screen.create_shop_screen(main.shop_frame) 
+        shop_screen.create_items()
+         
 #class that handles each shop item
 class Items:
     def __init__(self,item_name,price,description,type,display):
@@ -350,7 +372,6 @@ class Items:
                 "equiped": False}
             self.own = False
             self.equiped = False
-
         self.item_frame = Frame(shop_screen.shop_frame,width = 300,height = 100,bg=main_colour)
         self.item_frame.columnconfigure(3,weight=1)
         Label(self.item_frame,text=self.item_name,bg=main_colour,fg=text_colour).grid(row=0,column=1,sticky="w")
@@ -376,7 +397,7 @@ class Items:
     def check_item(self):
         if self.own:
             if self.equiped:
-                self.equip_item()
+                self.equip_item(True)
                 self.item_btn.config(text = "unequip",command=self.unequip_item)
             else:
                 #Button(self.item_frame,text="equip").grid(row=1,rowspan=3,column=3,sticky="e")
@@ -393,29 +414,36 @@ class Items:
             user.shop_details[self.item_name]["own"] = True
         else: messagebox.showerror("not enough points","You do not have enough points to afford this item")
 
-    def equip_item(self):
-        for i in shop_screen.items.values():
-            print(i)
-            print(f"{i.item_name},{i.equiped}")
-            print(i.equiped)
-            print('asd')
-            print(i.own)
-            print("-----------------------------------------------")
-            if i.item_name != self.item_name and i.equiped == True and i.own == True:
-                if self.type and i.type == "profile":
-                    i.equiped = False
-                    user.shop_details[i.item_name]["equiped"] = False
-                    i.item_btn.config(text = "equip",command=i.equip_item)
+    def equip_item(self,equiped=False):
         #apply item and change to unequip
         self.item_btn.config(text = "unequip",command=self.unequip_item)
         user.shop_details[self.item_name]["equiped"] = True
         self.equiped=True
         if self.type == "profile":
+            for i in shop_screen.items.values():
+                if i.item_name != self.item_name and i.equiped == True and i.own == True:
+                    if self.type and i.type == "profile":
+                        i.equiped = False
+                        user.shop_details[i.item_name]["equiped"] = False
+                        i.item_btn.config(text = "equip",command=i.equip_item)
             img = Image.open(self.display)
             img = img.resize((75, 75)) #resizing image to fit
             self.image = ImageTk.PhotoImage(img)
             main.image_label.config(image=self.image)
-
+        if self.type == "colour":
+            for i in shop_screen.items.values():
+                if i.item_name != self.item_name and i.equiped == True and i.own == True:
+                    if self.type and i.type == "colour":
+                        i.equiped = False
+                        user.shop_details[i.item_name]["equiped"] = False
+                        i.item_btn.config(text = "equip",command=i.equip_item)
+            main.save_user_data()
+            global main_colour,secondary_colour,text_colour
+            main_colour = self.display[1]
+            secondary_colour = self.display[2]
+            text_colour = self.display[3]
+            if not equiped:
+                shop_screen.apply_theme()
     def unequip_item(self):
         #removes item and defaults if nothing else is applied
         self.item_btn.config(text = "equip",command=self.equip_item)
@@ -425,8 +453,15 @@ class Items:
             img = Image.open(DEFAULT_PROFILE)
             img = img.resize((75, 75)) #resizing image to fit
             self.image = ImageTk.PhotoImage(img)
-            main.image_label.config(image=self.image)
-        
+            main.image_label.config(image=self.image) 
+        if self.type == "colour":
+            global main_colour,secondary_colour,text_colour
+            main_colour = DEFAULT_MAIN_COLOUR
+            secondary_colour = DEFAULT_SECONDARY_COLOUR
+            text_colour = "#000000"
+            shop_screen.apply_theme()
+
+
 #class that holds the user data and information for the user
 class User_data:
     def __init__(self,username,password,user_data):
@@ -449,7 +484,9 @@ class Main:
         self.main_frame.rowconfigure(1, weight=1)
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.grid_propagate(False)
+        self.create_main_frames()
 
+    def create_main_frames(self):
         #creating frame for title and user information
         self.top_frame = Frame(self.main_frame,height=60,bg=secondary_colour)
         self.top_frame.grid(row=0,column=1,columnspan=3,sticky="nsew")
@@ -511,6 +548,10 @@ class Main:
         login_screen.login_password_entry.delete(0,END)
         login_screen.login_username_entry.delete(0,END)
         login_screen.confirm_password_entry.delete(0,END)
+        global main_colour,secondary_colour,text_colour
+        main_colour = DEFAULT_MAIN_COLOUR
+        secondary_colour = DEFAULT_SECONDARY_COLOUR
+        text_colour = "#000000"
         self.save_user_data()#save user data when loggin out
         tasks_screen.clear_task_data() #clears tasks when loggin out
         shop_screen.clear_shop() #clears all tkinter widgets form the shop
@@ -547,6 +588,12 @@ class Main:
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
         else:
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
+
+    def update_user_info_display(self):
+            self.username_lbl.config(text=f"username: {user.username}")
+            self.level_lbl.config(text=f"level: {user.level}")
+            self.points_lbl.config(text=f"points: {user.points}")
+            self.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
 
 #function that gets user data from external file
 def get_user_data(username):
@@ -604,7 +651,7 @@ root.geometry("700x700")
 #constant variables
 MIN_AGE = 13
 DEFAULT_POINT_REWARD =10
-DEFAULT_PROFILE = r"images\chicken starver.PNG"
+DEFAULT_PROFILE = r"images\default_profile.PNG"
 HPRT = 1209600 # highest points rewarded time, (2weeks in seconds)
 DEFAULT_MAIN_COLOUR = "#E3E1E1"
 DEFAULT_SECONDARY_COLOUR = "#c9c9c9"
