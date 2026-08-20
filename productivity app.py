@@ -33,16 +33,16 @@ def time_to_sec(hour,minute,second):
 class Tasks_screen:
     def __init__(self,master):
         #setting canvas for tasks to go into
-        self.tasks_canvas = Canvas(master,width=400,height=250,bg="#C5C5C5",borderwidth=6)
+        self.tasks_canvas = Canvas(master,width=400,height=250,bg=secondary_colour,borderwidth=6)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
-        self.tasks_frame = Frame(self.tasks_canvas,bg="#703535",width=500,height=250)
+        self.tasks_frame = Frame(self.tasks_canvas,bg=secondary_colour,width=500,height=250)
 
         #creating the entry for user to add tasks
-        Label(master,text="task:").grid(row=1,column=0) 
+        Label(master,text="task:",bg=main_colour,fg=text_colour).grid(row=1,column=0) 
         self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
-        Label(master,text="description:").grid(row=2,column=0)
+        Label(master,text="description:",bg=main_colour,fg=text_colour).grid(row=2,column=0)
         self.user_description_entry = Entry(master)
         self.user_description_entry.grid(row=2,column=1,pady=5,sticky="w")
 
@@ -53,9 +53,9 @@ class Tasks_screen:
         self.calander.grid(row=0,column=0,columnspan=2,sticky="nsew")
 
         #creating button to add task
-        Button(master,text="add task",command=self.add_task).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
+        Button(master,text="add task",command=self.add_task,bg=main_colour,fg=text_colour).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
         #button to remove all tasks
-        Button(master,text="clear all tasks",command=self.clear_task_data).grid(row=5,column=0,padx=5,pady=5)
+        Button(master,text="clear all tasks",command=self.clear_task_data,bg=main_colour,fg=text_colour).grid(row=5,column=0,padx=5,pady=5)
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
@@ -161,10 +161,10 @@ class Tasks_screen:
         user.tasks_info = task_information
 
 #class that manages each individual user's tasks and information
-class Task():
+class Task:
         def __init__(self,task,due_date,position,description):
             #creating a frame for the task for all relevant task information
-            self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75)
+            self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75,bg=main_colour)
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
             self.task_frame.columnconfigure(0,minsize=300)
             self.task_frame.columnconfigure(2,weight=1)
@@ -174,55 +174,55 @@ class Task():
             self.description = description
 
             #adds the task information for each task added
-            Label(self.task_frame,text=self.task,wraplength=400).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
-            Label(self.task_frame,text=f"due: {self.due_date}").grid(row=2,column=0,sticky="nw")#label of of due 
-            Label(self.task_frame,text=f"description:\n {self.description}",wraplength=400,justify="left").grid(row=1,column=0,sticky="nw")#label of of due 
-            Button(self.task_frame, text="complete",command=lambda r=self.position: tasks_screen.complete_task(r)).grid(row=0,column=3,sticky="ne") #button to remove task
-            Button(self.task_frame, text="remove",command=lambda r=self.position: tasks_screen.remove_task(r)).grid(row=1,column=3,sticky="ne") #button to remove task
+            Label(self.task_frame,text=self.task,wraplength=400,bg=main_colour,fg=text_colour).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
+            Label(self.task_frame,text=f"due: {self.due_date}",bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nw")#label of of due 
+            Label(self.task_frame,text=f"description:\n{self.description}",wraplength=400,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nw")#label of of due 
+            Button(self.task_frame, text="complete",command=lambda r=self.position: tasks_screen.complete_task(r),bg=main_colour,fg=text_colour).grid(row=0,column=3,sticky="ne") #button to remove task
+            Button(self.task_frame, text="remove",command=lambda r=self.position: tasks_screen.remove_task(r),bg=main_colour,fg=text_colour).grid(row=1,column=3,sticky="ne") #button to remove task
             self.task_frame.grid(row=self.position,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
 #class that manages the login screen
 class Login_screen:
     def __init__(self,master):
         #setting frame in canvas
-        self.main_login_frame = Frame(master,bg="blue",width=700,height=700)
+        self.main_login_frame = Frame(master,bg=main_colour,width=700,height=700)
         self.main_login_frame.grid(row=0,column=0)
         self.main_login_frame.grid_propagate(False)
         self.main_login_frame.columnconfigure(0,weight=1)
         self.main_login_frame.columnconfigure(2,weight=1)
         #creating login title and buttons for signup and login
-        self.login_title = Label(self.main_login_frame,text="LOGIN").grid(row=0,column=1,padx=5,pady=5)
-        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=1,column=1,padx=5,pady=5)
-        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=2,column=1,padx=5,pady=5)
+        self.login_title = Label(self.main_login_frame,text="LOGIN",bg=main_colour,fg=text_colour).grid(row=0,column=1,padx=5,pady=5)
+        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5)
+        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5)
 
         #frame for the login
-        self.login_frame = Frame(master,bg="#FA2727",width=600,height=200)
+        self.login_frame = Frame(master,bg=main_colour,width=600,height=200)
         self.login_frame.grid(row=0,column=0,sticky="nsew")
         self.login_frame.columnconfigure(0,weight=1)
         self.login_frame.columnconfigure(3,weight=1)
         #creating buttons and entries for the login
-        Label(self.login_frame,text="Login").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.login_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.login_frame,text="password:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="Login",bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.login_frame,text="username:",bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="password:",bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5,sticky="e")
         self.login_username_entry = Entry(self.login_frame)
         self.login_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.login_password_entry = Entry(self.login_frame,show="*")
         self.login_password_entry.grid(row=2,column=2,padx=5,pady=5)
-        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=3,column=1,padx=5,pady=5)
-        Button(self.login_frame,text="login",command=self.login).grid(row=3,column=2,padx=5,pady=5)
-        Label(self.login_frame,text="Don't have an account?").grid(row=4,column=1,columnspan=2,padx=5,pady=5)
-        Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift()).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=3,column=1,padx=5,pady=5)
+        Button(self.login_frame,text="login",command=self.login,bg=main_colour,fg=text_colour).grid(row=3,column=2,padx=5,pady=5)
+        Label(self.login_frame,text="Don't have an account?",bg=main_colour,fg=text_colour).grid(row=4,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
 
         #frame for the signup 
-        self.signup_frame = Frame(master,bg="#E127FA",width=600,height=650)
+        self.signup_frame = Frame(master,bg=main_colour,width=600,height=650)
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
         self.signup_frame.columnconfigure(0,weight=1)
         self.signup_frame.columnconfigure(3,weight=1)
-        Label(self.signup_frame,text="Signup").grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.signup_frame,text="username:").grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="age:").grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="password:").grid(row=3,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="confirm password:").grid(row=4,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Signup",bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.signup_frame,text="username:",bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="age:",bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="password:",bg=main_colour,fg=text_colour).grid(row=3,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="confirm password:",bg=main_colour,fg=text_colour).grid(row=4,column=1,padx=5,pady=5,sticky="e")
         self.signup_username_entry = Entry(self.signup_frame)
         self.signup_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.age_entry = Entry(self.signup_frame)
@@ -231,10 +231,10 @@ class Login_screen:
         self.signup_password_entry.grid(row=3,column=2,padx=5,pady=5)
         self.confirm_password_entry = Entry(self.signup_frame,show="*")
         self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
-        Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift()).grid(row=5,column=1,padx=5,pady=5)
-        Button(self.signup_frame,text="signup",command=self.signup).grid(row=5,column=2,padx=5,pady=5)
-        Label(self.signup_frame,text="Already have an account?").grid(row=6,column=1,columnspan=2,padx=5,pady=5)
-        Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift()).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,padx=5,pady=5)
+        Button(self.signup_frame,text="signup",command=self.signup,bg=main_colour,fg=text_colour).grid(row=5,column=2,padx=5,pady=5)
+        Label(self.signup_frame,text="Already have an account?",bg=main_colour,fg=text_colour).grid(row=6,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
         self.main_login_frame.lift()
 
     def signup(self):
@@ -313,12 +313,12 @@ class Login_screen:
 class Shop_screen:
     def __init__(self,master):
         self.items = {}
-        Label(master,text="shop").grid(row=0,column=0)
-        self.shop_canvas = Canvas(master,width=320,height=500,bg="#C5C5C5",borderwidth=6)
+        Label(master,text="shop",font=("Arial", 20),bg=secondary_colour,fg=text_colour).grid(row=0,column=0,columnspan=2)
+        self.shop_canvas = Canvas(master,width=320,height=500,bg=secondary_colour)
         self.shop_canvas.grid(row=2,column=0,columnspan=3,sticky="nsew",pady=5,padx=5)
-        self.shop_frame = Frame(self.shop_canvas,bg="#E08B8B",width=320,height=500)
+        self.shop_frame = Frame(self.shop_canvas,bg=secondary_colour,width=320,height=500)
         self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
-        Button(master,text="close",command=lambda: main.show_frame(0)).grid(row=3,column=0,sticky="sw")
+        Button(master,text="close",command=lambda: main.show_frame(0),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="sw")
         add_scroll_bar(self.shop_canvas,self.shop_frame)
 #function that creates each shop item
     def create_items(self):
@@ -351,12 +351,12 @@ class Items:
             self.own = False
             self.equiped = False
 
-        self.item_frame = Frame(shop_screen.shop_frame,width = 300,height = 100)
+        self.item_frame = Frame(shop_screen.shop_frame,width = 300,height = 100,bg=main_colour)
         self.item_frame.columnconfigure(3,weight=1)
-        Label(self.item_frame,text=self.item_name).grid(row=0,column=1,sticky="w")
-        Label(self.item_frame,text=self.description,wraplength=150,justify="left").grid(row=1,column=1,sticky="w")
-        Label(self.item_frame,text=f"cost: {self.price}").grid(row=2,column=1,sticky="w")
-        display_frame = Frame(self.item_frame,width=75,height=75,bg="#5dcf9d")
+        Label(self.item_frame,text=self.item_name,bg=main_colour,fg=text_colour).grid(row=0,column=1,sticky="w")
+        Label(self.item_frame,text=self.description,wraplength=150,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=1,sticky="w")
+        Label(self.item_frame,text=f"cost: {self.price}",bg=main_colour,fg=text_colour).grid(row=2,column=1,sticky="w")
+        display_frame = Frame(self.item_frame,width=75,height=75)
         display_frame.grid(row=0,rowspan=3,column=0)
         if self.type == "colour":
             display_frame.config(bg=display[0]) #display 0 gets display colour
@@ -367,7 +367,7 @@ class Items:
             label = Label(display_frame,image=image)
             label.image = image
             label.pack()
-        self.item_btn = Button(self.item_frame,text="")
+        self.item_btn = Button(self.item_frame,text="",bg=main_colour,fg=text_colour)
         self.item_btn.grid(row=1,rowspan=3,column=3,sticky="e")
         self.check_item()
         self.item_frame.pack(pady=5,padx=2)
@@ -442,17 +442,16 @@ class User_data:
 class Main:
     def __init__(self,root):
         self.root = root #sets the variable root as the root which is the Tk window
-        self.root.configure(bg="#813677")
 
         #creating a main frame that holds all the other freames but the login frame
-        self.main_frame = Frame(self.root,height=700,width=700)
+        self.main_frame = Frame(self.root,height=700,width=700,bg=main_colour)
         self.main_frame.grid(column=0,row=0)
         self.main_frame.rowconfigure(1, weight=1)
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.grid_propagate(False)
 
         #creating frame for title and user information
-        self.top_frame = Frame(self.main_frame,height=60,bg="#d3d3d3")
+        self.top_frame = Frame(self.main_frame,height=60,bg=secondary_colour)
         self.top_frame.grid(row=0,column=1,columnspan=3,sticky="nsew")
         self.top_frame.grid_propagate(False) #stops the frame from resizing to the widgets inside
         self.top_frame.columnconfigure(0,weight=2)
@@ -460,26 +459,26 @@ class Main:
         self.top_frame.columnconfigure(2,weight=1)
         
         #creating a frame for menu buttons and image
-        self.button_menu_frame = Frame(self.main_frame,width=100,bg="#d3d3d3")
+        self.button_menu_frame = Frame(self.main_frame,width=100,bg=secondary_colour)
         self.button_menu_frame.grid(row=0,column=0,sticky="nsew",rowspan=5)
 
         #creating shop frame
-        self.shop_frame = Frame(self.main_frame,width=350,height=700,bg="#1076C9")
+        self.shop_frame = Frame(self.main_frame,width=350,height=700,bg=secondary_colour,highlightbackground=main_colour,highlightthickness=3,borderwidth=5)
         self.shop_frame.grid(row=1,column=1,sticky="ne",rowspan=5)
         self.shop_frame.grid_propagate(False)
 
         #creating the tasks grid
-        self.tasks_frame = Frame(self.main_frame,borderwidth=6)
+        self.tasks_frame = Frame(self.main_frame,borderwidth=6,bg=main_colour)
         self.tasks_frame.grid(row=1, column=1,sticky="nsew")
         self.tasks_frame.columnconfigure(3, weight=5)
         self.tasks_frame.columnconfigure(2, weight=4)
         self.tasks_frame.columnconfigure(1, weight=1)
 
         #adding in the user info for top frame
-        self.username_lbl = Label(self.top_frame,text="username: ")
-        self.points_lbl = Label(self.top_frame,text="points: ")
-        self.level_lbl = Label(self.top_frame,text="level: ")
-        self.next_level_lbl = Label(self.top_frame,text="Next lvl: ")
+        self.username_lbl = Label(self.top_frame,text="username: ",bg=secondary_colour,fg=text_colour)
+        self.points_lbl = Label(self.top_frame,text="points: ",bg=secondary_colour,fg=text_colour)
+        self.level_lbl = Label(self.top_frame,text="level: ",bg=secondary_colour,fg=text_colour)
+        self.next_level_lbl = Label(self.top_frame,text="Next lvl: ",bg=secondary_colour,fg=text_colour)
         self.username_lbl.grid(row=0,column=0,sticky="w",padx=5,pady=2)
         self.points_lbl.grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
         self.level_lbl.grid(row=1,column=0,sticky="w",padx=5,pady=2)
@@ -488,19 +487,15 @@ class Main:
         #adding frame for user image
         image_frame = Frame(self.button_menu_frame,width=100,height=100)
         image_frame.grid(row=0,column=0,pady=5)
-        # img = Image.open(DEFAULT_PROFILE)
-        # img = img.resize((75, 75)) #resizing image to fit
-        # image = ImageTk.PhotoImage(img)
         self.image_label = Label(image_frame)
-        #self.image_label.image = image
         self.image_label.pack()
 
         #creating the buttons for the menu
-        self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0)).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
-        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0)).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
-        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1)).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
-        self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
-        self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
+        self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
+        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
+        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
+        self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout,bg=main_colour,fg=text_colour).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
+        self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program,bg=main_colour,fg=text_colour).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
     #shows frame
     def show_frame(self,frame):
@@ -611,11 +606,15 @@ MIN_AGE = 13
 DEFAULT_POINT_REWARD =10
 DEFAULT_PROFILE = r"images\chicken starver.PNG"
 HPRT = 1209600 # highest points rewarded time, (2weeks in seconds)
+DEFAULT_MAIN_COLOUR = "#E3E1E1"
+DEFAULT_SECONDARY_COLOUR = "#c9c9c9"
+main_colour = DEFAULT_MAIN_COLOUR
+secondary_colour = DEFAULT_SECONDARY_COLOUR
+text_colour = "#000000"
+root.config(bg=main_colour)
 main = Main(root) #creating the main root
 #instantiating frames
 shop_screen = Shop_screen(main.shop_frame)
 tasks_screen = Tasks_screen(main.tasks_frame)
 login_screen = Login_screen(main.root)
 root.mainloop()
-
-"""first loading results in default equiped and after logging out then image no longer shows on login"""
