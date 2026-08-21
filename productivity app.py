@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import json
 from PIL import Image, ImageTk
+import random
 #making sure the current directory is the same as the file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -124,6 +125,12 @@ class Tasks_screen:
         user.exp += self.calc_points(task.due_date)
         main.points_lbl.config(text=f"points: {user.points}")
         main.update_level()
+        tip_frame = Frame(main.tasks_frame,bg=secondary_colour,width=250,height=80)
+        tip_frame.grid(row=0,column=2,columnspan=3,sticky="ne")
+        tip_frame.pack_propagate(False)
+        Label(tip_frame,text="productivty tips",bg=secondary_colour,fg=text_colour).pack()
+        Label(tip_frame,text=tip_messages[random.randint(0,(len(tip_messages))-1)],justify="left",bg=secondary_colour,fg=text_colour,wraplength=200).pack(side="left")
+        tip_frame.after(2000,tip_frame.destroy)
 
 #function that calculates the points rewarded
     def calc_points(self,due):
@@ -193,9 +200,9 @@ class Login_screen:
         self.main_login_frame.columnconfigure(0,weight=1)
         self.main_login_frame.columnconfigure(2,weight=1)
         #creating login title and buttons for signup and login
-        self.login_title = Label(self.main_login_frame,text="LOGIN",bg=main_colour,fg=text_colour).grid(row=0,column=1,padx=5,pady=5)
-        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5)
-        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5)
+        self.login_title = Label(self.main_login_frame,text="Welcome to the productivty app",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,padx=5,pady=5)
+        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=1,column=1,padx=5,pady=5)
+        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=2,column=1,padx=5,pady=5)
 
         #frame for the login
         self.login_frame = Frame(master,bg=main_colour,width=600,height=200)
@@ -203,15 +210,15 @@ class Login_screen:
         self.login_frame.columnconfigure(0,weight=1)
         self.login_frame.columnconfigure(3,weight=1)
         #creating buttons and entries for the login
-        Label(self.login_frame,text="Login",bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.login_frame,text="username:",bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.login_frame,text="password:",bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="Login",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.login_frame,text="username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
         self.login_username_entry = Entry(self.login_frame)
         self.login_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.login_password_entry = Entry(self.login_frame,show="*")
         self.login_password_entry.grid(row=2,column=2,padx=5,pady=5)
-        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=3,column=1,padx=5,pady=5)
-        Button(self.login_frame,text="login",command=self.login,bg=main_colour,fg=text_colour).grid(row=3,column=2,padx=5,pady=5)
+        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5)
+        Button(self.login_frame,text="login",command=self.login,bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=2,padx=5,pady=5)
         Label(self.login_frame,text="Don't have an account?",bg=main_colour,fg=text_colour).grid(row=4,column=1,columnspan=2,padx=5,pady=5)
         Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
 
@@ -220,11 +227,11 @@ class Login_screen:
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
         self.signup_frame.columnconfigure(0,weight=1)
         self.signup_frame.columnconfigure(3,weight=1)
-        Label(self.signup_frame,text="Signup",bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.signup_frame,text="username:",bg=main_colour,fg=text_colour).grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="age:",bg=main_colour,fg=text_colour).grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="password:",bg=main_colour,fg=text_colour).grid(row=3,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="confirm password:",bg=main_colour,fg=text_colour).grid(row=4,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Signup",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
+        Label(self.signup_frame,text="username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="age:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="confirm password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=4,column=1,padx=5,pady=5,sticky="e")
         self.signup_username_entry = Entry(self.signup_frame)
         self.signup_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.age_entry = Entry(self.signup_frame)
@@ -233,8 +240,8 @@ class Login_screen:
         self.signup_password_entry.grid(row=3,column=2,padx=5,pady=5)
         self.confirm_password_entry = Entry(self.signup_frame,show="*")
         self.confirm_password_entry.grid(row=4,column=2,padx=5,pady=5)
-        Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,padx=5,pady=5)
-        Button(self.signup_frame,text="signup",command=self.signup,bg=main_colour,fg=text_colour).grid(row=5,column=2,padx=5,pady=5)
+        Button(self.signup_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=5,column=1,padx=5,pady=5)
+        Button(self.signup_frame,text="signup",command=self.signup,bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=5,column=2,padx=5,pady=5)
         Label(self.signup_frame,text="Already have an account?",bg=main_colour,fg=text_colour).grid(row=6,column=1,columnspan=2,padx=5,pady=5)
         Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
         self.main_login_frame.lift()
@@ -316,8 +323,8 @@ class Shop_screen:
     def __init__(self,master):
         self.items = {}
         self.create_shop_screen(master)
+    #function created all elements for the shop screen
     def create_shop_screen(self,master):
-        #self.creating_shop = False
         Label(master,text="shop",font=("Arial", 20),bg=secondary_colour,fg=text_colour).grid(row=0,column=0,columnspan=2)
         self.shop_canvas = Canvas(master,width=320,height=500,bg=secondary_colour)
         self.shop_canvas.grid(row=2,column=0,columnspan=3,sticky="nsew",pady=5,padx=5)
@@ -325,7 +332,6 @@ class Shop_screen:
         self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
         Button(master,text="close",command=lambda: main.show_frame(0),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="sw")
         add_scroll_bar(self.shop_canvas,self.shop_frame)
-        #self.creating_shop = False
 #function that creates each shop item
     def create_items(self):
         with open("shopdata.json","r") as file:
@@ -333,22 +339,22 @@ class Shop_screen:
         for item_data in shop_data:
             item = Items(item_data["item"],item_data["price"],item_data["description"],item_data["type"],display=item_data["display"])
             self.items[item_data["item"]] = item
-
+#function that clear shops items
     def clear_shop(self):
         for item in self.shop_frame.winfo_children():#gets all children from frame
             item.destroy() 
         self.items.clear()#clear the shop data
-
+#function that applies the theme equiped from the shop
     def apply_theme(self):
-        for x in main.shop_frame.winfo_children():
+        for x in main.shop_frame.winfo_children(): #removing all widgets
             x.destroy()
         for x in main.tasks_frame.winfo_children():
             x.destroy()
         for x in main.main_frame.winfo_children():
             x.destroy()
-        shop_screen.items.clear()
+        shop_screen.items.clear() #clearing memeory
         tasks_screen.task_frames.clear()
-        main.create_main_frames()
+        main.create_main_frames()#recreating the widgets with new colour
         tasks_screen.create_task_screen(main.tasks_frame) 
         tasks_screen.display_existing_tasks()
         main.update_user_info_display()
@@ -393,17 +399,15 @@ class Items:
         self.check_item()
         self.item_frame.pack(pady=5,padx=2)
         self.item_frame.grid_propagate(False)
-
+#funciton that checks the items state for button
     def check_item(self):
         if self.own:
             if self.equiped:
                 self.equip_item(True)
                 self.item_btn.config(text = "unequip",command=self.unequip_item)
             else:
-                #Button(self.item_frame,text="equip").grid(row=1,rowspan=3,column=3,sticky="e")
                 self.item_btn.config(text = "equip",command=self.equip_item)
         else:
-            #Button(self.item_frame,text="buy").grid(row=1,rowspan=3,column=3,sticky="e")  
             self.item_btn.config(text = "buy",command=self.buy_item)
     def buy_item(self):
         #reduce points and update, change buy to equip
@@ -413,31 +417,32 @@ class Items:
             self.item_btn.config(text = "equip",command=self.equip_item)
             user.shop_details[self.item_name]["own"] = True
         else: messagebox.showerror("not enough points","You do not have enough points to afford this item")
-
+#function that equips the equipped item
     def equip_item(self,equiped=False):
         #apply item and change to unequip
         self.item_btn.config(text = "unequip",command=self.unequip_item)
         user.shop_details[self.item_name]["equiped"] = True
         self.equiped=True
         if self.type == "profile":
-            for i in shop_screen.items.values():
+            for i in shop_screen.items.values(): #unequips equipped item other than the one user has equipped
                 if i.item_name != self.item_name and i.equiped == True and i.own == True:
                     if self.type and i.type == "profile":
                         i.equiped = False
                         user.shop_details[i.item_name]["equiped"] = False
                         i.item_btn.config(text = "equip",command=i.equip_item)
-            img = Image.open(self.display)
+            img = Image.open(self.display)#displays image
             img = img.resize((75, 75)) #resizing image to fit
             self.image = ImageTk.PhotoImage(img)
             main.image_label.config(image=self.image)
         if self.type == "colour":
-            for i in shop_screen.items.values():
+            for i in shop_screen.items.values():#unequips equipped item other than the one user has equipped
                 if i.item_name != self.item_name and i.equiped == True and i.own == True:
                     if self.type and i.type == "colour":
                         i.equiped = False
                         user.shop_details[i.item_name]["equiped"] = False
                         i.item_btn.config(text = "equip",command=i.equip_item)
             main.save_user_data()
+            #updates colours
             global main_colour,secondary_colour,text_colour
             main_colour = self.display[1]
             secondary_colour = self.display[2]
@@ -455,12 +460,12 @@ class Items:
             self.image = ImageTk.PhotoImage(img)
             main.image_label.config(image=self.image) 
         if self.type == "colour":
+            #changing colours back to default
             global main_colour,secondary_colour,text_colour
             main_colour = DEFAULT_MAIN_COLOUR
             secondary_colour = DEFAULT_SECONDARY_COLOUR
             text_colour = "#000000"
             shop_screen.apply_theme()
-
 
 #class that holds the user data and information for the user
 class User_data:
@@ -485,7 +490,7 @@ class Main:
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.grid_propagate(False)
         self.create_main_frames()
-
+#function that creates all the main items
     def create_main_frames(self):
         #creating frame for title and user information
         self.top_frame = Frame(self.main_frame,height=60,bg=secondary_colour)
@@ -538,7 +543,7 @@ class Main:
     def show_frame(self,frame):
         frames = [self.tasks_frame,self.shop_frame]
         frames[frame].lift()
-
+#function that logs out of the account
     def logout(self):
         login_screen.main_login_frame.lift()
         main.tasks_frame.lift()
@@ -568,18 +573,18 @@ class Main:
         users[user.username]["shop_details"] = user.shop_details
         with open(r"userdata.json","w") as file:
             json.dump(users,file,indent=4)
-
+#function that closes the program
     def close_program(self):
         self.save_user_data()  # Save user data before closing the program
         root.destroy()
-
+#function that calculates the next level
     def next_level_calc(self,level):
         if level >= 0:
             exp = 50 + level*50**1.1
         else:
             exp = 50
         return int(exp)
-
+#function that updates the levels display
     def update_level(self):
         if user.exp >= self.next_level_calc(user.level):
             user.exp -= self.next_level_calc(user.level)
@@ -588,7 +593,7 @@ class Main:
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
         else:
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
-
+#function that updates all user info
     def update_user_info_display(self):
             self.username_lbl.config(text=f"username: {user.username}")
             self.level_lbl.config(text=f"level: {user.level}")
@@ -659,6 +664,11 @@ main_colour = DEFAULT_MAIN_COLOUR
 secondary_colour = DEFAULT_SECONDARY_COLOUR
 text_colour = "#000000"
 root.config(bg=main_colour)
+tip_messages = ["Break large, overwhelming projects down into small, easy steps.",
+                "Focus on one single task at a time to improve the quality of your work and save mental energy.",
+                "take short breaks, step away from your desk every 90 minutes to rest your brain",
+                "study in small sessions",
+                "Put your phone on silent, close extra browser tabs, and use noise-canceling tools to protect your attention."]
 main = Main(root) #creating the main root
 #instantiating frames
 shop_screen = Shop_screen(main.shop_frame)
