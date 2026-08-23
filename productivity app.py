@@ -10,28 +10,8 @@ from PIL import Image, ImageTk
 import random
 #making sure the current directory is the same as the file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
- # this function converts seconds to hours minutes and seconds (hr,min,sec)
-def sec_to_time(total_seconds):
-    hours = total_seconds/3600
-    hour = int(hours)
-    print(f"hours: {hour}") 
-
-    minutes = (hours-hour)*60
-    minute = int(minutes)
-    print(f"minutes: {minute}")
-
-    seconds = (minutes-minute)*60
-    second = int(seconds)
-    print(f"second: {second}")
-
-#this function converts time into seconds
-def time_to_sec(hour,minute,second):
-    total_seconds = hour*3600 + minute*60 + second
-    return total_seconds
-
 #class that manages the tasks and task information
-class Tasks_screen:
+class TasksScreen:
     def __init__(self,master):
         self.task_frames = {} #used for saving each task object
         self.create_task_screen(master)
@@ -191,7 +171,7 @@ class Task:
             self.task_frame.grid(row=self.position,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 
 #class that manages the login screen
-class Login_screen:
+class LoginScreen:
     def __init__(self,master):
         #setting frame in canvas
         self.main_login_frame = Frame(master,bg=main_colour,width=700,height=700)
@@ -203,6 +183,7 @@ class Login_screen:
         self.login_title = Label(self.main_login_frame,text="Welcome to the productivty app",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,padx=5,pady=5)
         self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=1,column=1,padx=5,pady=5)
         self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=2,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="close",command=root.destroy,bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=3,column=1,padx=5,pady=5)
 
         #frame for the login
         self.login_frame = Frame(master,bg=main_colour,width=600,height=200)
@@ -319,7 +300,7 @@ class Login_screen:
             else: return False
 
 #class that manages the shop screen
-class Shop_screen:
+class ShopScreen:
     def __init__(self,master):
         self.items = {}
         self.create_shop_screen(master)
@@ -468,7 +449,7 @@ class Items:
             shop_screen.apply_theme()
 
 #class that holds the user data and information for the user
-class User_data:
+class UserData:
     def __init__(self,username,password,user_data):
         self.username = username
         self.password = password
@@ -477,6 +458,153 @@ class User_data:
         self.level = user_data[username]["level"]
         self.tasks_info = user_data[username]["tasks"]
         self.shop_details = user_data[username]["shop_details"]
+
+class StopwatchTimer: #class to create a stopwatch window for each stopwatch created
+    def __init__(self, master): #master takes the self.root which is the window for the main app function 
+        self.window = Toplevel(master,bg=main_colour) # Create a new window for each stopwatch top level allows us to have multiple stopwatches without them interfering with each other
+        self.window.title("Stopwatch/timer")
+        self.window.geometry("250x250")
+        self.window.columnconfigure((0,4),weight=1)
+        vmcd = self.window.register(self.limit_input_length)#register validation function
+        self.stopwatch_running = False #variable to track if the stopwatch/timer is running or not, used to control the flow of the program and prevent multiple timers from running at the same time
+        self.timer_running = False 
+        self.elapsed_time = 0.0
+        self.start_time = 0.0
+        self.timer_remaining = 0.0
+
+        #timer gui
+        self.timer_frame = Frame(self.window,bg=main_colour,width=250,height=200)
+        self.timer_frame.grid(row=1,column=1,columnspan=2,pady=5,sticky="nsew")
+        self.timer_frame.grid_propagate(False)
+        self.timer_frame.columnconfigure((0,7),weight=1)
+        Label(self.timer_frame, text="timer", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=6)
+        self.timer_label = Label(self.timer_frame, text="00:00:00", font=("Arial", 25),justify="center",bg=main_colour,fg=text_colour)
+        self.timer_label.grid(row=2,column=1,columnspan=6)
+        Label(self.timer_frame,text="hour",bg=main_colour,fg=text_colour).grid(row=1,column=1)
+        self.hour_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
+        self.hour_entry.grid(row=1,column=2)
+        Label(self.timer_frame,text="min",bg=main_colour,fg=text_colour).grid(row=1,column=3)
+        self.minute_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
+        self.minute_entry.grid(row=1,column=4)
+        Label(self.timer_frame,text="sec",bg=main_colour,fg=text_colour).grid(row=1,column=5)
+        self.second_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
+        self.second_entry.grid(row=1,column=6)
+        Button(self.timer_frame, text="Start", command=self.start_timer,bg=main_colour,fg=text_colour).grid(row=3,column=2,pady=5)
+        Button(self.timer_frame, text="Stop", command=self.stop_timer,bg=main_colour,fg=text_colour).grid(row=3,column=3,pady=5)
+        Button(self.timer_frame, text="Reset", command=self.reset_timer,bg=main_colour,fg=text_colour).grid(row=3,column=4,pady=5)
+
+        #stopwatch gui
+        self.stopwatch_frame = Frame(self.window,bg=main_colour,width=250,height=200)
+        self.stopwatch_frame.grid(row=1,column=1,columnspan=3,pady=5,sticky="nsew")
+        self.stopwatch_frame.grid_propagate(False)
+        self.stopwatch_frame.columnconfigure((0,4),weight=1)
+        Label(self.stopwatch_frame, text="stopwatch", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=3)
+        self.stopwatch_label = Label(self.stopwatch_frame, text="00:00:00", font=("Arial", 25),justify="center",bg=main_colour,fg=text_colour)
+        self.stopwatch_label.grid(row=1,column=1,columnspan=3)
+        Button(self.stopwatch_frame, text="Start", command=lambda:self.start_stopwatch(self.update_stopwatch),bg=main_colour,fg=text_colour).grid(row=2,column=1,pady=5)
+        Button(self.stopwatch_frame, text="Stop", command=self.stop_stopwatch,bg=main_colour,fg=text_colour).grid(row=2,column=2,pady=5)
+        Button(self.stopwatch_frame, text="Reset", command=self.reset_stopwatch,bg=main_colour,fg=text_colour).grid(row=2,column=3,pady=5)
+        #buttons to switch stopwatch to timer
+        Button(self.window, text="stopwatch", command=lambda:self.stopwatch_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=1,pady=5,sticky="e")
+        Button(self.window, text="timer", command=lambda:self.timer_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=2,pady=5,sticky="w")
+
+    # Function to validate input length
+    def limit_input_length(self,input_text):
+        if len(input_text) > 3:
+            return False
+        return True
+
+    def update_stopwatch(self):
+        if self.stopwatch_running:
+            # Calculate current elapsed time
+            current_elapsed = time.time() - self.start_time + self.elapsed_time
+            self.display_stopwatch(current_elapsed)
+            # Schedule the next update in 100ms (0.1 seconds)
+            self.window.after(100, self.update_stopwatch)
+
+    def display_stopwatch(self, total_seconds):
+        hours = total_seconds/3600
+        hour = int(hours)
+        minutes = (hours-hour)*60
+        minute = int(minutes)
+        seconds = (minutes-minute)*60
+        second = int(seconds)
+        self.stopwatch_label.config(text=f"{int(hour):02}:{int(minute):02}:{second:02}")
+
+    def start_stopwatch(self,function):
+        if not self.stopwatch_running:
+            self.start_time = time.time()
+            self.stopwatch_running = True
+            function()
+        
+    def stop_stopwatch(self):
+        if self.stopwatch_running:
+            self.elapsed_time += time.time() - self.start_time
+            self.stopwatch_running = False  
+            
+    def reset_stopwatch(self):
+        self.stopwatch_running = False
+        self.timer_running = False
+        self.elapsed_time = 0.0
+        self.stopwatch_label.config(text="00:00:00")
+
+    def start_timer(self):
+        if self.timer_running:
+            return  # already running, ignore extra clicks
+        # If nothing left running from a previous stop, read fresh values from entries
+        if self.timer_remaining <= 0:
+            try:
+                h = int(self.hour_entry.get() or 0) #gets time if empty set to 0
+                m = int(self.minute_entry.get() or 0)
+                s = int(self.second_entry.get() or 0)
+                self.hour_entry.delete(0,END)
+                self.minute_entry.delete(0,END)
+                self.second_entry.delete(0,END)
+            except ValueError:
+                messagebox.showerror("Invalid input", "Please enter whole numbers.")
+                return
+            total = h * 3600 + m * 60 + s
+            if total <= 0: #gets total seconds
+                messagebox.showerror("Invalid input", "Please enter a time greater than zero.")
+                return
+            self.timer_remaining = total
+        self.timer_end_time = time.time() + self.timer_remaining
+        self.timer_running = True
+        self.update_timer()
+
+    def update_timer(self):
+        if not self.timer_running:
+            return
+        remaining = self.timer_end_time - time.time()
+        if remaining <= 0:
+            self.timer_remaining = 0
+            self.timer_running = False
+            self.display_timer(0)
+            messagebox.showinfo("Time's up!", "Your timer has finished.")
+            return
+        self.timer_remaining = remaining
+        self.display_timer(remaining)
+        self.window.after(200, self.update_timer)
+
+    def display_timer(self, seconds):
+        hours = seconds/3600
+        hour = int(hours)
+        minutes = (hours-hour)*60
+        minute = int(minutes)
+        seconds = (minutes-minute)*60
+        second = int(seconds)
+        self.timer_label.config(text=f"{int(hour):02}:{int(minute):02}:{int(second):02}")
+
+    def stop_timer(self):
+        #pauses the timer
+        if self.timer_running:
+            self.timer_remaining = self.timer_end_time - time.time()
+            self.timer_running = False
+
+    def reset_timer(self):
+        self.timer_running = False
+        self.timer_remaining = 0.0
+        self.timer_label.config(text="00:00:00")
 
 #class that runs the main program functions and sets the windows
 class Main:
@@ -534,7 +662,7 @@ class Main:
 
         #creating the buttons for the menu
         self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
-        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
+        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: StopwatchTimer(self.root),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
         self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
         self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout,bg=main_colour,fg=text_colour).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
         self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program,bg=main_colour,fg=text_colour).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
@@ -605,7 +733,7 @@ def get_user_data(username):
     global user
     with open(r"userdata.json","r") as file:
         users = json.load(file) 
-    user = User_data(users[username]["username"],users[username]["password"],users)
+    user = UserData(users[username]["username"],users[username]["password"],users)
 
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
@@ -671,7 +799,7 @@ tip_messages = ["Break large, overwhelming projects down into small, easy steps.
                 "Put your phone on silent, close extra browser tabs, and use noise-canceling tools to protect your attention."]
 main = Main(root) #creating the main root
 #instantiating frames
-shop_screen = Shop_screen(main.shop_frame)
-tasks_screen = Tasks_screen(main.tasks_frame)
-login_screen = Login_screen(main.root)
+shop_screen = ShopScreen(main.shop_frame)
+tasks_screen = TasksScreen(main.tasks_frame)
+login_screen = LoginScreen(main.root)
 root.mainloop()
