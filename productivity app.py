@@ -15,13 +15,13 @@ class TasksScreen:
     def __init__(self,master):
         self.task_frames = {} #used for saving each task object
         self.create_task_screen(master)
+
     def create_task_screen(self,master):
         #setting canvas for tasks to go into
         self.tasks_canvas = Canvas(master,width=400,height=250,bg=secondary_colour,borderwidth=6)
         self.tasks_canvas.grid(row=4,column=0,columnspan=3,sticky="nsew")
         #setting frame in canvas to into the canvas to put elements into
         self.tasks_frame = Frame(self.tasks_canvas,bg=secondary_colour,width=500,height=250)
-
         #creating the entry for user to add tasks
         Label(master,text="task:",bg=main_colour,fg=text_colour).grid(row=1,column=0) 
         self.user_tasks_entry = Entry(master)
@@ -29,13 +29,11 @@ class TasksScreen:
         Label(master,text="description:",bg=main_colour,fg=text_colour).grid(row=2,column=0)
         self.user_description_entry = Entry(master)
         self.user_description_entry.grid(row=2,column=1,pady=5,sticky="w")
-
         #creating a calendar that the user can select a date from for the due date
         self.calander = Calendar(master, selectmode = 'day', date_pattern="dd/mm/yyyy",
                year = datetime.now().year, month = datetime.now().month,
                day = datetime.now().day,font=("Arial", 10),)
         self.calander.grid(row=0,column=0,columnspan=2,sticky="nsew")
-
         #creating button to add task
         Button(master,text="add task",command=self.add_task,bg=main_colour,fg=text_colour).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
         #button to remove all tasks
@@ -44,7 +42,6 @@ class TasksScreen:
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
 
-        
     #creates the tasks saved from file
     def display_existing_tasks(self): 
          self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame       
@@ -57,7 +54,6 @@ class TasksScreen:
         task = self.user_tasks_entry.get()
         due_date = self.calander.get_date()
         current_time = time.time()
-
         try:#checks if the duedate is in the correct format 
             if task == "" or due_date == "": #checks if entries are empty and gives error message returns false for validation
                 messagebox.showerror("Error", "Please fill in tasks or select a date on the calendar")
@@ -105,7 +101,7 @@ class TasksScreen:
         user.exp += self.calc_points(task.due_date)
         main.points_lbl.config(text=f"points: {user.points}")
         main.update_level()
-        tip_frame = Frame(main.tasks_frame,bg=secondary_colour,width=250,height=80)
+        tip_frame = Frame(main.tasks_frame,bg=secondary_colour,width=250,height=80) #adding tips
         tip_frame.grid(row=0,column=2,columnspan=3,sticky="ne")
         tip_frame.pack_propagate(False)
         Label(tip_frame,text="productivty tips",bg=secondary_colour,fg=text_colour).pack()
@@ -161,7 +157,6 @@ class Task:
             self.due_date = due_date
             self.position = position
             self.description = description
-
             #adds the task information for each task added
             Label(self.task_frame,text=self.task,wraplength=400,bg=main_colour,fg=text_colour).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
             Label(self.task_frame,text=f"due: {self.due_date}",bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nw")#label of of due 
@@ -177,14 +172,12 @@ class LoginScreen:
         self.main_login_frame = Frame(master,bg=main_colour,width=700,height=700)
         self.main_login_frame.grid(row=0,column=0)
         self.main_login_frame.grid_propagate(False)
-        self.main_login_frame.columnconfigure(0,weight=1)
-        self.main_login_frame.columnconfigure(2,weight=1)
+        self.main_login_frame.columnconfigure((0,2),weight=1)
         #creating login title and buttons for signup and login
-        self.login_title = Label(self.main_login_frame,text="Welcome to the productivty app",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,padx=5,pady=5)
-        self.login_btn = Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=1,column=1,padx=5,pady=5)
-        self.signup_btn = Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=2,column=1,padx=5,pady=5)
+        Label(self.main_login_frame,text="Welcome to the productivty app",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=1,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=2,column=1,padx=5,pady=5)
         Button(self.main_login_frame,text="close",command=root.destroy,bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=3,column=1,padx=5,pady=5)
-
         #frame for the login
         self.login_frame = Frame(master,bg=main_colour,width=600,height=200)
         self.login_frame.grid(row=0,column=0,sticky="nsew")
@@ -202,7 +195,6 @@ class LoginScreen:
         Button(self.login_frame,text="login",command=self.login,bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=2,padx=5,pady=5)
         Label(self.login_frame,text="Don't have an account?",bg=main_colour,fg=text_colour).grid(row=4,column=1,columnspan=2,padx=5,pady=5)
         Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
-
         #frame for the signup 
         self.signup_frame = Frame(master,bg=main_colour,width=600,height=650)
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
@@ -237,7 +229,9 @@ class LoginScreen:
             users = json.load(file)
         #checking if inputs are valid  (minimum age is 13+)
         try:
-            if int(age)<MIN_AGE:
+            if username.strip(" ") == "" or age.strip(" ") == "" or password.strip(" ") == "" or confirm_password.strip(" ") == "":
+                messagebox.showerror("empty field","you must fill all fields")
+            elif int(age)<MIN_AGE:
                 messagebox.showerror("age not valid","you must be 13 or older to register an account")
             #checking that each password is the same
             elif password != confirm_password:
@@ -247,22 +241,13 @@ class LoginScreen:
             else:
                 #save new user data
                 new_user_data = {"username":username,
-                "password":password,
-                "points":0,
-                "level":0,
-                "exp": 0,
-                "tasks": {},
-                "shop_details":
-                    {"item_name":
-                        {"own":False,
-                        "equiped":False}}}
+                "password":password, "points":0, "level":0, "exp": 0, "tasks": {}, "shop_details":{}}
                 with open(r"userdata.json","r") as file:
                     users = json.load(file)
                 users[username] = new_user_data
                 with open(r"userdata.json","w") as file:
                     json.dump(users,file,indent=4)
                 get_user_data(username)
-                
                 #creating the new profile gui
                 img = Image.open(DEFAULT_PROFILE)
                 img = img.resize((75, 75)) 
@@ -290,14 +275,16 @@ class LoginScreen:
         else: messagebox.showerror("login failuire","username or password incorrect")
 
     def validate_login(self,username,password):
-        with open(r"userdata.json","r") as file:
-            users = json.load(file)
-            if username in users:
-                if password == users[username]["password"]:
-                    get_user_data(username)
-                    return True
+        if username.strip(" ") != "" or password.strip(" ") != "":
+            with open(r"userdata.json","r") as file:
+                users = json.load(file)
+                if username in users:
+                    if password == users[username]["password"]:
+                        get_user_data(username)
+                        return True
+                    else: return False
                 else: return False
-            else: return False
+        else: return False
 
 #class that manages the shop screen
 class ShopScreen:
@@ -327,6 +314,7 @@ class ShopScreen:
         self.items.clear()#clear the shop data
 #function that applies the theme equiped from the shop
     def apply_theme(self):
+        already_equiped = False
         for x in main.shop_frame.winfo_children(): #removing all widgets
             x.destroy()
         for x in main.tasks_frame.winfo_children():
@@ -341,7 +329,15 @@ class ShopScreen:
         main.update_user_info_display()
         shop_screen.create_shop_screen(main.shop_frame) 
         shop_screen.create_items()
-         
+        for i in self.items.values(): #checks if any item is equiped and equips default profile if not
+            if i.equiped:
+                already_equiped = True
+        if not already_equiped:
+            img = Image.open(DEFAULT_PROFILE)
+            img = img.resize((75, 75)) 
+            self.image = ImageTk.PhotoImage(img)
+            main.image_label.config(image=self.image)
+               
 #class that handles each shop item
 class Items:
     def __init__(self,item_name,price,description,type,display):
@@ -411,10 +407,11 @@ class Items:
                         i.equiped = False
                         user.shop_details[i.item_name]["equiped"] = False
                         i.item_btn.config(text = "equip",command=i.equip_item)
-            img = Image.open(self.display)#displays image
-            img = img.resize((75, 75)) #resizing image to fit
-            self.image = ImageTk.PhotoImage(img)
-            main.image_label.config(image=self.image)
+            if self.equiped:
+                img = Image.open(self.display)#displays image
+                img = img.resize((75, 75)) #resizing image to fit
+                self.image = ImageTk.PhotoImage(img)
+                main.image_label.config(image=self.image)
         if self.type == "colour":
             for i in shop_screen.items.values():#unequips equipped item other than the one user has equipped
                 if i.item_name != self.item_name and i.equiped == True and i.own == True:
@@ -467,7 +464,7 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         self.window.columnconfigure((0,4),weight=1)
         vmcd = self.window.register(self.limit_input_length)#register validation function
         self.stopwatch_running = False #variable to track if the stopwatch/timer is running or not, used to control the flow of the program and prevent multiple timers from running at the same time
-        self.timer_running = False 
+        self.timer_running = False  
         self.elapsed_time = 0.0
         self.start_time = 0.0
         self.timer_remaining = 0.0
@@ -610,7 +607,6 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
 class Main:
     def __init__(self,root):
         self.root = root #sets the variable root as the root which is the Tk window
-
         #creating a main frame that holds all the other freames but the login frame
         self.main_frame = Frame(self.root,height=700,width=700,bg=main_colour)
         self.main_frame.grid(column=0,row=0)
@@ -627,23 +623,19 @@ class Main:
         self.top_frame.columnconfigure(0,weight=2)
         self.top_frame.columnconfigure(1,weight=8)
         self.top_frame.columnconfigure(2,weight=1)
-        
         #creating a frame for menu buttons and image
         self.button_menu_frame = Frame(self.main_frame,width=100,bg=secondary_colour)
         self.button_menu_frame.grid(row=0,column=0,sticky="nsew",rowspan=5)
-
         #creating shop frame
         self.shop_frame = Frame(self.main_frame,width=350,height=700,bg=secondary_colour,highlightbackground=main_colour,highlightthickness=3,borderwidth=5)
         self.shop_frame.grid(row=1,column=1,sticky="ne",rowspan=5)
         self.shop_frame.grid_propagate(False)
-
         #creating the tasks grid
         self.tasks_frame = Frame(self.main_frame,borderwidth=6,bg=main_colour)
         self.tasks_frame.grid(row=1, column=1,sticky="nsew")
-        self.tasks_frame.columnconfigure(3, weight=5)
+        self.tasks_frame.columnconfigure(3, weight=5,minsize=100)
         self.tasks_frame.columnconfigure(2, weight=4)
         self.tasks_frame.columnconfigure(1, weight=1)
-
         #adding in the user info for top frame
         self.username_lbl = Label(self.top_frame,text="username: ",bg=secondary_colour,fg=text_colour)
         self.points_lbl = Label(self.top_frame,text="points: ",bg=secondary_colour,fg=text_colour)
@@ -653,13 +645,11 @@ class Main:
         self.points_lbl.grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
         self.level_lbl.grid(row=1,column=0,sticky="w",padx=5,pady=2)
         self.next_level_lbl.grid(row=1,column=2,sticky="w",padx=5,pady=2)
-
         #adding frame for user image
         image_frame = Frame(self.button_menu_frame,width=100,height=100)
         image_frame.grid(row=0,column=0,pady=5)
         self.image_label = Label(image_frame)
         self.image_label.pack()
-
         #creating the buttons for the menu
         self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
         self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: StopwatchTimer(self.root),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
@@ -673,21 +663,22 @@ class Main:
         frames[frame].lift()
 #function that logs out of the account
     def logout(self):
-        login_screen.main_login_frame.lift()
-        main.tasks_frame.lift()
-        login_screen.age_entry.delete(0,END)
-        login_screen.signup_password_entry.delete(0,END)
-        login_screen.signup_username_entry.delete(0,END)
-        login_screen.login_password_entry.delete(0,END)
-        login_screen.login_username_entry.delete(0,END)
-        login_screen.confirm_password_entry.delete(0,END)
-        global main_colour,secondary_colour,text_colour
-        main_colour = DEFAULT_MAIN_COLOUR
-        secondary_colour = DEFAULT_SECONDARY_COLOUR
-        text_colour = "#000000"
-        self.save_user_data()#save user data when loggin out
-        tasks_screen.clear_task_data() #clears tasks when loggin out
-        shop_screen.clear_shop() #clears all tkinter widgets form the shop
+        if messagebox.askokcancel("logout","Are you sure you want to logout?"):
+            login_screen.main_login_frame.lift()
+            main.tasks_frame.lift()
+            login_screen.age_entry.delete(0,END)#clearing entries
+            login_screen.signup_password_entry.delete(0,END)
+            login_screen.signup_username_entry.delete(0,END)
+            login_screen.login_password_entry.delete(0,END)
+            login_screen.login_username_entry.delete(0,END)
+            login_screen.confirm_password_entry.delete(0,END)
+            global main_colour,secondary_colour,text_colour
+            main_colour = DEFAULT_MAIN_COLOUR
+            secondary_colour = DEFAULT_SECONDARY_COLOUR
+            text_colour = "#000000"
+            self.save_user_data()#save user data when loggin out
+            tasks_screen.clear_task_data() #clears tasks when loggin out
+            shop_screen.clear_shop() #clears all tkinter widgets form the shop
         
 #saves user data to an external file
     def save_user_data(self):

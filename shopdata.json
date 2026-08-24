@@ -17,7 +17,7 @@
 "display":"images\\cloud_profile.PNG"},
 
 {"item":"duck",
-"price":30,
+"price":40,
 "description":"duck profile picture",
 "type":"profile",
 "display":"images\\duck_profile.PNG"},
@@ -41,19 +41,19 @@
 "display":["#4e4e4e", "#4e4e4e", "#303030","#ffffff"]},
 
 {"item":"portal theme",
-"price":50,
+"price":100,
 "type":"colour",
 "description":"purple wonderland",
 "display":["#ba70fa", "#ba70fa", "#781ec7","#ffffff"]},
 
 {"item":"forest theme",
-"price":50,
+"price":100,
 "type":"colour",
 "description":"purple wonderland",
 "display":["#14ba02", "#14ba02", "#1f7816","#000000"]},
 
-{"item":"don't do it",
-"price":50,
+{"item":"abominal theme",
+"price":150,
 "type":"colour",
 "description":"you will regret this",
 "display":["#56fcf4", "#56fcf4", "#3a9630","#000000"]}]

@@ -1,20 +1,65 @@
 {
     "user": {
         "username": "user",
-        "password": "",
+        "password": "123",
         "points": 0,
         "level": 0,
         "exp": 0,
-        "tasks": {
-            "0": {
-                "task_details": "",
-                "due_date": "",
-                "description": "",
-                "position": 0
-            }
-        },
+        "tasks": {},
         "shop_details": {
             "item_name": {
+                "own": false,
+                "equiped": false
+            },
+            "octo": {
+                "own": false,
+                "equiped": false
+            },
+            "bee": {
+                "own": false,
+                "equiped": false
+            },
+            "cloud": {
+                "own": true,
+                "equiped": true
+            },
+            "duck": {
+                "own": false,
+                "equiped": false
+            },
+            "flower": {
+                "own": false,
+                "equiped": false
+            },
+            "popsicle": {
+                "own": false,
+                "equiped": false
+            },
+            "item2": {
+                "own": false,
+                "equiped": false
+            },
+            "dark theme": {
+                "own": false,
+                "equiped": false
+            },
+            "portal": {
+                "own": true,
+                "equiped": true
+            },
+            "portal theme": {
+                "own": false,
+                "equiped": false
+            },
+            "forest theme": {
+                "own": false,
+                "equiped": false
+            },
+            "don't do it": {
+                "own": false,
+                "equiped": false
+            },
+            "abominal theme": {
                 "own": false,
                 "equiped": false
             }
@@ -23,31 +68,141 @@
     "": {
         "username": "",
         "password": "",
-        "points": 836,
-        "level": 4,
-        "exp": 191,
+        "points": 257,
+        "level": 5,
+        "exp": 7,
         "tasks": {
-            "6": {
-                "task_details": "so",
-                "due_date": "14/08/2026",
+            "0": {
+                "task_details": "`12312",
+                "due_date": "20/08/2026",
                 "description": "",
-                "position": 6
+                "position": 0
             },
-            "7": {
-                "task_details": "so now hwat",
-                "due_date": "14/08/2026",
-                "description": "",
-                "position": 7
+            "1": {
+                "task_details": "testing program",
+                "due_date": "23/08/2026",
+                "description": "test program",
+                "position": 1
             },
-            "8": {
-                "task_details": "hopefully it works now",
-                "due_date": "14/08/2026",
+            "2": {
+                "task_details": "test",
+                "due_date": "23/08/2026",
                 "description": "",
-                "position": 8
+                "position": 2
             }
         },
         "shop_details": {
             "item_name": {
+                "own": false,
+                "equiped": false
+            },
+            "item2": {
+                "own": false,
+                "equiped": false
+            },
+            "item": {
+                "own": true,
+                "equiped": true
+            },
+            "test 1": {
+                "own": true,
+                "equiped": false
+            },
+            "octo": {
+                "own": true,
+                "equiped": false
+            },
+            "bee": {
+                "own": true,
+                "equiped": false
+            },
+            "cloud": {
+                "own": true,
+                "equiped": false
+            },
+            "duck": {
+                "own": true,
+                "equiped": true
+            },
+            "flower": {
+                "own": false,
+                "equiped": false
+            },
+            "popsicle": {
+                "own": false,
+                "equiped": false
+            },
+            "dark theme": {
+                "own": true,
+                "equiped": true
+            },
+            "portal": {
+                "own": true,
+                "equiped": false
+            },
+            "don't do it": {
+                "own": true,
+                "equiped": false
+            },
+            "portal theme": {
+                "own": false,
+                "equiped": false
+            },
+            "forest theme": {
+                "own": true,
+                "equiped": false
+            },
+            "abominal theme": {
+                "own": true,
+                "equiped": false
+            }
+        }
+    },
+    "test": {
+        "username": "test",
+        "password": "123",
+        "points": 62,
+        "level": 1,
+        "exp": 12,
+        "tasks": {},
+        "shop_details": {
+            "octo": {
+                "own": false,
+                "equiped": false
+            },
+            "bee": {
+                "own": false,
+                "equiped": false
+            },
+            "cloud": {
+                "own": false,
+                "equiped": false
+            },
+            "duck": {
+                "own": false,
+                "equiped": false
+            },
+            "flower": {
+                "own": false,
+                "equiped": false
+            },
+            "popsicle": {
+                "own": false,
+                "equiped": false
+            },
+            "dark theme": {
+                "own": false,
+                "equiped": false
+            },
+            "portal theme": {
+                "own": false,
+                "equiped": false
+            },
+            "forest theme": {
+                "own": false,
+                "equiped": false
+            },
+            "abominal theme": {
                 "own": false,
                 "equiped": false
             }
