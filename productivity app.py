@@ -1,5 +1,5 @@
 #This program is a time management app where it helps someone with time management by gamifying it.
-from tkinter import*
+from tkinter import* 
 from tkinter import messagebox
 from tkcalendar import Calendar
 import os 
@@ -41,14 +41,12 @@ class TasksScreen:
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
-
     #creates the tasks saved from file
     def display_existing_tasks(self): 
          self.num_of_tasks = max(self.task_frames.keys()) + 1 if self.task_frames else 0 #gets the last key in the dictionary and adds 1 to it for positioning the next task frame       
          for task_information in user.tasks_info.values():
             self.task = Task(task_information["task_details"], task_information["due_date"], task_information["position"], task_information["description"])
             self.task_frames[task_information["position"]] = self.task
-
     #checks if the user has given the inputs
     def validate_input(self):
         task = self.user_tasks_entry.get()
@@ -68,7 +66,6 @@ class TasksScreen:
             messagebox.showerror("Error", "Due date must be in dd/mm/yyyy format (e.g. 25/12/2026).") 
             return False 
         return True
-    
 #function to add tasks 
     def add_task(self):
         if self.validate_input():
@@ -82,7 +79,6 @@ class TasksScreen:
             self.save_tasks()
         else:
             pass
-
 #function that removes task from task screen
     def remove_task(self, row):
         task = self.task_frames.get(row)
@@ -90,7 +86,6 @@ class TasksScreen:
         if frame is not None:
             frame.destroy()
             self.task_frames.pop(row, None)
-
 #function that removes and completes tasks from tasks screen (rewards users)           
     def complete_task(self, row):
         # destroy every widget sitting in that row
@@ -107,7 +102,6 @@ class TasksScreen:
         Label(tip_frame,text="productivty tips",bg=secondary_colour,fg=text_colour).pack()
         Label(tip_frame,text=tip_messages[random.randint(0,(len(tip_messages))-1)],justify="left",bg=secondary_colour,fg=text_colour,wraplength=200).pack(side="left")
         tip_frame.after(2000,tip_frame.destroy)
-
 #function that calculates the points rewarded
     def calc_points(self,due):
         current_time = time.time()
@@ -121,7 +115,6 @@ class TasksScreen:
                 return DEFAULT_POINT_REWARD + int((x/64)**1.1)  #rewarding the user with more points for completing the task early
         except OverflowError:
             return DEFAULT_POINT_REWARD  #if the due date is too far in the future or past, just return the default point reward
-
 #function that clears all tasks from tasks screen without removing task data 
     def clear_tasks(self):
         for position in self.task_frames.keys():
@@ -129,12 +122,10 @@ class TasksScreen:
             frame = task.task_frame 
             if frame is not None:
                 frame.destroy()
-
 #function that clears all tasks data and tasks from task screen
     def clear_task_data(self):
         self.clear_tasks()
         self.task_frames.clear()
-
 #function that saves tasks to user information for data saving
     def save_tasks(self):
         task_information = {}
@@ -149,7 +140,7 @@ class TasksScreen:
 class Task:
         def __init__(self,task,due_date,position,description):
             #creating a frame for the task for all relevant task information
-            self.task_frame = Frame(tasks_screen.tasks_frame,width=400,height=75,bg=main_colour)
+            self.task_frame = Frame(tasks_screen.tasks_frame,width=390,height=75,bg=main_colour)
             #self.task_frame.grid_propagate(False)#stops the frame from resizing top the widgets inside
             self.task_frame.columnconfigure(0,minsize=300)
             self.task_frame.columnconfigure(2,weight=1)
@@ -158,13 +149,12 @@ class Task:
             self.position = position
             self.description = description
             #adds the task information for each task added
-            Label(self.task_frame,text=self.task,wraplength=400,bg=main_colour,fg=text_colour).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
+            Label(self.task_frame,text=self.task,wraplength=360,bg=main_colour,fg=text_colour).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
             Label(self.task_frame,text=f"due: {self.due_date}",bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nw")#label of of due 
-            Label(self.task_frame,text=f"description:\n{self.description}",wraplength=400,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nw")#label of of due 
+            Label(self.task_frame,text=f"description:\n{self.description}",wraplength=360,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nw")#label of of due 
             Button(self.task_frame, text="complete",command=lambda r=self.position: tasks_screen.complete_task(r),bg=main_colour,fg=text_colour).grid(row=0,column=3,sticky="ne") #button to remove task
             Button(self.task_frame, text="remove",command=lambda r=self.position: tasks_screen.remove_task(r),bg=main_colour,fg=text_colour).grid(row=1,column=3,sticky="ne") #button to remove task
             self.task_frame.grid(row=self.position,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
-
 #class that manages the login screen
 class LoginScreen:
     def __init__(self,master):
@@ -218,7 +208,7 @@ class LoginScreen:
         Label(self.signup_frame,text="Already have an account?",bg=main_colour,fg=text_colour).grid(row=6,column=1,columnspan=2,padx=5,pady=5)
         Button(self.signup_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour).grid(row=7,column=1,columnspan=2,padx=5,pady=5)
         self.main_login_frame.lift()
-
+#function for the signup button
     def signup(self):
         #getting the user info from the user to create an account 
         username = self.signup_username_entry.get()
@@ -227,12 +217,14 @@ class LoginScreen:
         confirm_password = self.confirm_password_entry.get()
         with open(r"userdata.json","r") as file:
             users = json.load(file)
-        #checking if inputs are valid  (minimum age is 13+)
+        #checking if inputs are valid  (minimum age is 13+ max is 110)
         try:
             if username.strip(" ") == "" or age.strip(" ") == "" or password.strip(" ") == "" or confirm_password.strip(" ") == "":
                 messagebox.showerror("empty field","you must fill all fields")
             elif int(age)<MIN_AGE:
                 messagebox.showerror("age not valid","you must be 13 or older to register an account")
+            elif int(age)>MAX_AGE:
+                messagebox.showerror("age not valid","please enter a valid age")
             #checking that each password is the same
             elif password != confirm_password:
                 messagebox.showerror("password","your passwords must match")
@@ -257,7 +249,7 @@ class LoginScreen:
                 shop_screen.create_items() #creates item in the shop
                 main.main_frame.lift()
         except ValueError:messagebox.showerror("age","your age must be an integer")
-
+#function for the login button
     def login(self):
         username = self.login_username_entry.get()
         password = self.login_password_entry.get()
@@ -273,7 +265,7 @@ class LoginScreen:
             shop_screen.apply_theme() #applies any themes the user has
             main.main_frame.lift()
         else: messagebox.showerror("login failuire","username or password incorrect")
-
+#function that validates the login information
     def validate_login(self,username,password):
         if username.strip(" ") != "" or password.strip(" ") != "":
             with open(r"userdata.json","r") as file:
@@ -285,7 +277,6 @@ class LoginScreen:
                     else: return False
                 else: return False
         else: return False
-
 #class that manages the shop screen
 class ShopScreen:
     def __init__(self,master):
@@ -321,23 +312,23 @@ class ShopScreen:
             x.destroy()
         for x in main.main_frame.winfo_children():
             x.destroy()
-        shop_screen.items.clear() #clearing memeory
+        self.items.clear() #clearing memeory
         tasks_screen.task_frames.clear()
         main.create_main_frames()#recreating the widgets with new colour
         tasks_screen.create_task_screen(main.tasks_frame) 
         tasks_screen.display_existing_tasks()
         main.update_user_info_display()
-        shop_screen.create_shop_screen(main.shop_frame) 
-        shop_screen.create_items()
+        self.create_shop_screen(main.shop_frame) 
+        self.create_items()
         for i in self.items.values(): #checks if any item is equiped and equips default profile if not
-            if i.equiped:
+            if i.type == "profile" and i.equiped:
+                i.equip_item(True)
                 already_equiped = True
         if not already_equiped:
             img = Image.open(DEFAULT_PROFILE)
             img = img.resize((75, 75)) 
             self.image = ImageTk.PhotoImage(img)
             main.image_label.config(image=self.image)
-               
 #class that handles each shop item
 class Items:
     def __init__(self,item_name,price,description,type,display):
@@ -346,15 +337,16 @@ class Items:
         self.description = description 
         self.type = type
         self.display = display #displays preview of item, either image for profile or colour for colour scheme
-        try:
+        try:#checking if user save data has item
             self.own = user.shop_details[item_name]["own"]
             self.equiped = user.shop_details[item_name]["equiped"]
-        except KeyError:
+        except KeyError:#creates item entry fo user save data
             user.shop_details[item_name] = {
                 "own": False,
                 "equiped": False}
             self.own = False
             self.equiped = False
+        #displaying items
         self.item_frame = Frame(shop_screen.shop_frame,width = 300,height = 100,bg=main_colour)
         self.item_frame.columnconfigure(3,weight=1)
         Label(self.item_frame,text=self.item_name,bg=main_colour,fg=text_colour).grid(row=0,column=1,sticky="w")
@@ -407,7 +399,7 @@ class Items:
                         i.equiped = False
                         user.shop_details[i.item_name]["equiped"] = False
                         i.item_btn.config(text = "equip",command=i.equip_item)
-            if self.equiped:
+            #if self.equiped:
                 img = Image.open(self.display)#displays image
                 img = img.resize((75, 75)) #resizing image to fit
                 self.image = ImageTk.PhotoImage(img)
@@ -444,7 +436,6 @@ class Items:
             secondary_colour = DEFAULT_SECONDARY_COLOUR
             text_colour = "#000000"
             shop_screen.apply_theme()
-
 #class that holds the user data and information for the user
 class UserData:
     def __init__(self,username,password,user_data):
@@ -455,10 +446,10 @@ class UserData:
         self.level = user_data[username]["level"]
         self.tasks_info = user_data[username]["tasks"]
         self.shop_details = user_data[username]["shop_details"]
-
-class StopwatchTimer: #class to create a stopwatch window for each stopwatch created
+#class to create a stopwatch window for each stopwatch created
+class StopwatchTimer: 
     def __init__(self, master): #master takes the self.root which is the window for the main app function 
-        self.window = Toplevel(master,bg=main_colour) # Create a new window for each stopwatch top level allows us to have multiple stopwatches without them interfering with each other
+        self.window = Toplevel(master,bg=main_colour) #create a new window for each stopwatch top level allows us to have multiple stopwatches without them interfering with each other
         self.window.title("Stopwatch/timer")
         self.window.geometry("250x250")
         self.window.columnconfigure((0,4),weight=1)
@@ -479,16 +470,16 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         self.timer_label.grid(row=2,column=1,columnspan=6)
         Label(self.timer_frame,text="hour",bg=main_colour,fg=text_colour).grid(row=1,column=1)
         self.hour_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
-        self.hour_entry.grid(row=1,column=2)
+        self.hour_entry.grid(row=1,column=2,sticky="w")
         Label(self.timer_frame,text="min",bg=main_colour,fg=text_colour).grid(row=1,column=3)
         self.minute_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
-        self.minute_entry.grid(row=1,column=4)
+        self.minute_entry.grid(row=1,column=4,sticky="w")
         Label(self.timer_frame,text="sec",bg=main_colour,fg=text_colour).grid(row=1,column=5)
         self.second_entry = Entry(self.timer_frame,width=3, validate="key",validatecommand=(vmcd,"%P"))
-        self.second_entry.grid(row=1,column=6)
-        Button(self.timer_frame, text="Start", command=self.start_timer,bg=main_colour,fg=text_colour).grid(row=3,column=2,pady=5)
-        Button(self.timer_frame, text="Stop", command=self.stop_timer,bg=main_colour,fg=text_colour).grid(row=3,column=3,pady=5)
-        Button(self.timer_frame, text="Reset", command=self.reset_timer,bg=main_colour,fg=text_colour).grid(row=3,column=4,pady=5)
+        self.second_entry.grid(row=1,column=6,sticky="w")
+        Button(self.timer_frame, text="Start", command=self.start_timer,bg=main_colour,fg=text_colour).grid(row=3,column=2,pady=5,padx=5)
+        Button(self.timer_frame, text="Stop", command=self.stop_timer,bg=main_colour,fg=text_colour).grid(row=3,column=3,pady=5,padx=5)
+        Button(self.timer_frame, text="Reset", command=self.reset_timer,bg=main_colour,fg=text_colour).grid(row=3,column=4,pady=5,padx=5)
 
         #stopwatch gui
         self.stopwatch_frame = Frame(self.window,bg=main_colour,width=250,height=200)
@@ -502,23 +493,23 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         Button(self.stopwatch_frame, text="Stop", command=self.stop_stopwatch,bg=main_colour,fg=text_colour).grid(row=2,column=2,pady=5)
         Button(self.stopwatch_frame, text="Reset", command=self.reset_stopwatch,bg=main_colour,fg=text_colour).grid(row=2,column=3,pady=5)
         #buttons to switch stopwatch to timer
-        Button(self.window, text="stopwatch", command=lambda:self.stopwatch_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=1,pady=5,sticky="e")
-        Button(self.window, text="timer", command=lambda:self.timer_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=2,pady=5,sticky="w")
+        Button(self.window, text="stopwatch", command=lambda:self.stopwatch_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=1,pady=5,padx=5,sticky="e")
+        Button(self.window, text="timer", command=lambda:self.timer_frame.lift(),bg=main_colour,fg=text_colour).grid(row=0,column=2,pady=5,padx=5,sticky="w")
 
-    # Function to validate input length
+    #function to validate input length
     def limit_input_length(self,input_text):
         if len(input_text) > 3:
             return False
         return True
-
+#function that updates the stopwatch
     def update_stopwatch(self):
         if self.stopwatch_running:
-            # Calculate current elapsed time
+            #calculates current elapsed time
             current_elapsed = time.time() - self.start_time + self.elapsed_time
             self.display_stopwatch(current_elapsed)
-            # Schedule the next update in 100ms (0.1 seconds)
+            #updates stopwatch after 0.1 seocnds
             self.window.after(100, self.update_stopwatch)
-
+#function that updates the display for hte stopwatch
     def display_stopwatch(self, total_seconds):
         hours = total_seconds/3600
         hour = int(hours)
@@ -527,24 +518,24 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         seconds = (minutes-minute)*60
         second = int(seconds)
         self.stopwatch_label.config(text=f"{int(hour):02}:{int(minute):02}:{second:02}")
-
+#function that starts the stopwatch
     def start_stopwatch(self,function):
         if not self.stopwatch_running:
             self.start_time = time.time()
             self.stopwatch_running = True
             function()
-        
+#function that stops the stopwatch        
     def stop_stopwatch(self):
         if self.stopwatch_running:
             self.elapsed_time += time.time() - self.start_time
             self.stopwatch_running = False  
-            
+#function that resets the stopwatch            
     def reset_stopwatch(self):
         self.stopwatch_running = False
         self.timer_running = False
         self.elapsed_time = 0.0
         self.stopwatch_label.config(text="00:00:00")
-
+#function that starts the timer
     def start_timer(self):
         if self.timer_running:
             return  # already running, ignore extra clicks
@@ -568,7 +559,7 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         self.timer_end_time = time.time() + self.timer_remaining
         self.timer_running = True
         self.update_timer()
-
+#function tht updates the timer
     def update_timer(self):
         if not self.timer_running:
             return
@@ -582,7 +573,7 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         self.timer_remaining = remaining
         self.display_timer(remaining)
         self.window.after(200, self.update_timer)
-
+#function that updates the display for the timer
     def display_timer(self, seconds):
         hours = seconds/3600
         hour = int(hours)
@@ -591,9 +582,8 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         seconds = (minutes-minute)*60
         second = int(seconds)
         self.timer_label.config(text=f"{int(hour):02}:{int(minute):02}:{int(second):02}")
-
+#function that pauses the timer
     def stop_timer(self):
-        #pauses the timer
         if self.timer_running:
             self.timer_remaining = self.timer_end_time - time.time()
             self.timer_running = False
@@ -602,7 +592,6 @@ class StopwatchTimer: #class to create a stopwatch window for each stopwatch cre
         self.timer_running = False
         self.timer_remaining = 0.0
         self.timer_label.config(text="00:00:00")
-
 #class that runs the main program functions and sets the windows
 class Main:
     def __init__(self,root):
@@ -651,11 +640,11 @@ class Main:
         self.image_label = Label(image_frame)
         self.image_label.pack()
         #creating the buttons for the menu
-        self.tasks_frame_button = Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
-        self.timer_frame_button = Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: StopwatchTimer(self.root),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
-        self.shop_frame_button = Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
-        self.logout_frame_button = Button(self.button_menu_frame, text="logout", command=self.logout,bg=main_colour,fg=text_colour).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
-        self.close_button = Button(self.button_menu_frame, text="Close", command=self.close_program,bg=main_colour,fg=text_colour).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
+        Button(self.button_menu_frame, text="Tasks", command=lambda: self.show_frame(0),bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nsew",padx=5,pady=5)#button to show the tasks frame
+        Button(self.button_menu_frame, text="timer/stopwatch", command=lambda: StopwatchTimer(self.root),bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nsew",padx=5,pady=5)
+        Button(self.button_menu_frame, text="shop", command=lambda: self.show_frame(1),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="nsew",padx=5,pady=5) 
+        Button(self.button_menu_frame, text="logout", command=self.logout,bg=main_colour,fg=text_colour).grid(row=4,column=0,sticky="nsew",padx=5,pady=5)
+        Button(self.button_menu_frame, text="Close", command=self.close_program,bg=main_colour,fg=text_colour).grid(row=5,column=0,sticky="nsew",padx=5,pady=5) #button to close the program
 
     #shows frame
     def show_frame(self,frame):
@@ -694,8 +683,9 @@ class Main:
             json.dump(users,file,indent=4)
 #function that closes the program
     def close_program(self):
-        self.save_user_data()  # Save user data before closing the program
-        root.destroy()
+        if messagebox.askokcancel("close","are you sure you want to exit"):
+            self.save_user_data()  #saves user data before closing the program
+            root.destroy()
 #function that calculates the next level
     def next_level_calc(self,level):
         if level >= 0:
@@ -729,13 +719,12 @@ def get_user_data(username):
 #function to add a scroll bar to a canvas    
 def add_scroll_bar(canvas,frame):
     #creating scrollbar for the canvas
-    my_scrollbar = Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
+    my_scrollbar = Scrollbar(canvas, orient=VERTICAL, command=canvas.yview  )
     my_scrollbar.place(relx=1, rely=0, relheight=1, anchor="ne")
     canvas.configure(yscrollcommand=my_scrollbar.set)
     # Track scrollability
     can_scroll_verticaly = [False]
     can_scroll_horizontaly = [False]
-    # Update scrollregion and scrollability flags
     #makes the scroll wheel scrollable when the content is larger than the canvas
     def update_scroll_flags():
         canvas.update_idletasks()
@@ -771,9 +760,10 @@ def add_scroll_bar(canvas,frame):
 #setting up the root
 root = Tk()
 root.title("productivity manager")
-root.geometry("700x700") 
+root.geometry("700x670") 
 #constant variables
 MIN_AGE = 13
+MAX_AGE = 110
 DEFAULT_POINT_REWARD =10
 DEFAULT_PROFILE = r"images\default_profile.PNG"
 HPRT = 1209600 # highest points rewarded time, (2weeks in seconds)
@@ -783,10 +773,10 @@ main_colour = DEFAULT_MAIN_COLOUR
 secondary_colour = DEFAULT_SECONDARY_COLOUR
 text_colour = "#000000"
 root.config(bg=main_colour)
-tip_messages = ["Break large, overwhelming projects down into small, easy steps.",
+tip_messages = ["Break large overwhelming projects down into small, easy steps.",
                 "Focus on one single task at a time to improve the quality of your work and save mental energy.",
-                "take short breaks, step away from your desk every 90 minutes to rest your brain",
-                "study in small sessions",
+                "Take short breaks, step away from your desk every 90 minutes to rest your brain",
+                "Study in small sessions",
                 "Put your phone on silent, close extra browser tabs, and use noise-canceling tools to protect your attention."]
 main = Main(root) #creating the main root
 #instantiating frames
