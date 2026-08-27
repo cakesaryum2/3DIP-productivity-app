@@ -23,10 +23,10 @@ class TasksScreen:
         #setting frame in canvas to into the canvas to put elements into
         self.tasks_frame = Frame(self.tasks_canvas,bg=secondary_colour,width=500,height=250)
         #creating the entry for user to add tasks
-        Label(master,text="task:",bg=main_colour,fg=text_colour).grid(row=1,column=0) 
+        Label(master,text="Task:",bg=main_colour,fg=text_colour).grid(row=1,column=0) 
         self.user_tasks_entry = Entry(master)
         self.user_tasks_entry.grid(row=1,column=1,pady=5,sticky="w")
-        Label(master,text="description:",bg=main_colour,fg=text_colour).grid(row=2,column=0)
+        Label(master,text="Description:",bg=main_colour,fg=text_colour).grid(row=2,column=0)
         self.user_description_entry = Entry(master)
         self.user_description_entry.grid(row=2,column=1,pady=5,sticky="w")
         #creating a calendar that the user can select a date from for the due date
@@ -35,9 +35,9 @@ class TasksScreen:
                day = datetime.now().day,font=("Arial", 10),)
         self.calander.grid(row=0,column=0,columnspan=2,sticky="nsew")
         #creating button to add task
-        Button(master,text="add task",command=self.add_task,bg=main_colour,fg=text_colour).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
+        Button(master,text="Add task",command=self.add_task,bg=main_colour,fg=text_colour).grid(row=3,column=0,columnspan=2,padx=5,pady=5)
         #button to remove all tasks
-        Button(master,text="clear all tasks",command=self.clear_task_data,bg=main_colour,fg=text_colour).grid(row=5,column=0,padx=5,pady=5)
+        Button(master,text="Clear all tasks",command=self.clear_task_data,bg=main_colour,fg=text_colour).grid(row=5,column=0,padx=5,pady=5)
         add_scroll_bar(self.tasks_canvas,self.tasks_frame) #adds a scroll bar to the canvas
         #puts the frame into the canvas
         self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw") 
@@ -150,10 +150,10 @@ class Task:
             self.description = description
             #adds the task information for each task added
             Label(self.task_frame,text=self.task,wraplength=360,bg=main_colour,fg=text_colour).grid(row=0,column=0,sticky="nw",columnspan=2)#label of task 
-            Label(self.task_frame,text=f"due: {self.due_date}",bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nw")#label of of due 
-            Label(self.task_frame,text=f"description:\n{self.description}",wraplength=360,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nw")#label of of due 
-            Button(self.task_frame, text="complete",command=lambda r=self.position: tasks_screen.complete_task(r),bg=main_colour,fg=text_colour).grid(row=0,column=3,sticky="ne") #button to remove task
-            Button(self.task_frame, text="remove",command=lambda r=self.position: tasks_screen.remove_task(r),bg=main_colour,fg=text_colour).grid(row=1,column=3,sticky="ne") #button to remove task
+            Label(self.task_frame,text=f"Due: {self.due_date}",bg=main_colour,fg=text_colour).grid(row=2,column=0,sticky="nw")#label of of due 
+            Label(self.task_frame,text=f"Description:\n{self.description}",wraplength=360,justify="left",bg=main_colour,fg=text_colour).grid(row=1,column=0,sticky="nw")#label of of due 
+            Button(self.task_frame, text="Complete",command=lambda r=self.position: tasks_screen.complete_task(r),bg=main_colour,fg=text_colour,width=8).grid(row=0,column=3,sticky="ne") #button to remove task
+            Button(self.task_frame, text="Remove",command=lambda r=self.position: tasks_screen.remove_task(r),bg=main_colour,fg=text_colour,width=8).grid(row=1,column=3,sticky="ne") #button to remove task
             self.task_frame.grid(row=self.position,column=1,pady=5,stick="nsew") #positioning the frame in the tasks_frame
 #class that manages the login screen
 class LoginScreen:
@@ -165,9 +165,9 @@ class LoginScreen:
         self.main_login_frame.columnconfigure((0,2),weight=1)
         #creating login title and buttons for signup and login
         Label(self.main_login_frame,text="Welcome to the productivty app",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,padx=5,pady=5)
-        Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=1,column=1,padx=5,pady=5)
-        Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=2,column=1,padx=5,pady=5)
-        Button(self.main_login_frame,text="close",command=root.destroy,bg=main_colour,fg=text_colour,font = ("Arial",15)).grid(row=3,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="login",command=lambda:self.login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15),width=7).grid(row=1,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",15),width=7).grid(row=2,column=1,padx=5,pady=5)
+        Button(self.main_login_frame,text="close",command=root.destroy,bg=main_colour,fg=text_colour,font = ("Arial",15),width=7).grid(row=3,column=1,padx=5,pady=5)
         #frame for the login
         self.login_frame = Frame(master,bg=main_colour,width=600,height=200)
         self.login_frame.grid(row=0,column=0,sticky="nsew")
@@ -175,26 +175,26 @@ class LoginScreen:
         self.login_frame.columnconfigure(3,weight=1)
         #creating buttons and entries for the login
         Label(self.login_frame,text="Login",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.login_frame,text="username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.login_frame,text="password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="Username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.login_frame,text="Password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
         self.login_username_entry = Entry(self.login_frame)
         self.login_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.login_password_entry = Entry(self.login_frame,show="*")
         self.login_password_entry.grid(row=2,column=2,padx=5,pady=5)
-        Button(self.login_frame,text="back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5)
-        Button(self.login_frame,text="login",command=self.login,bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=2,padx=5,pady=5)
+        Button(self.login_frame,text="Back",command=lambda:self.main_login_frame.lift(),bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5)
+        Button(self.login_frame,text="Login",command=self.login,bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=2,padx=5,pady=5)
         Label(self.login_frame,text="Don't have an account?",bg=main_colour,fg=text_colour).grid(row=4,column=1,columnspan=2,padx=5,pady=5)
-        Button(self.login_frame,text="signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
+        Button(self.login_frame,text="Signup",command=lambda:self.signup_frame.lift(),bg=main_colour,fg=text_colour).grid(row=5,column=1,columnspan=2,padx=5,pady=5)
         #frame for the signup 
         self.signup_frame = Frame(master,bg=main_colour,width=600,height=650)
         self.signup_frame.grid(row=0,column=0,sticky="nsew")
         self.signup_frame.columnconfigure(0,weight=1)
         self.signup_frame.columnconfigure(3,weight=1)
         Label(self.signup_frame,text="Signup",bg=main_colour,fg=text_colour,font = ("Arial",20)).grid(row=0,column=1,columnspan=2,padx=5,pady=5)
-        Label(self.signup_frame,text="username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="age:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5,sticky="e")
-        Label(self.signup_frame,text="confirm password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=4,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Username:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=1,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Age:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=2,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=3,column=1,padx=5,pady=5,sticky="e")
+        Label(self.signup_frame,text="Confirm password:",bg=main_colour,fg=text_colour,font = ("Arial",10)).grid(row=4,column=1,padx=5,pady=5,sticky="e")
         self.signup_username_entry = Entry(self.signup_frame)
         self.signup_username_entry.grid(row=1,column=2,padx=5,pady=5)
         self.age_entry = Entry(self.signup_frame)
@@ -211,7 +211,7 @@ class LoginScreen:
 #function for the signup button
     def signup(self):
         #getting the user info from the user to create an account 
-        username = self.signup_username_entry.get()
+        username = (self.signup_username_entry.get()).strip(" ")
         age = self.age_entry.get()
         password = self.signup_password_entry.get()
         confirm_password = self.confirm_password_entry.get()
@@ -284,12 +284,12 @@ class ShopScreen:
         self.create_shop_screen(master)
     #function created all elements for the shop screen
     def create_shop_screen(self,master):
-        Label(master,text="shop",font=("Arial", 20),bg=secondary_colour,fg=text_colour).grid(row=0,column=0,columnspan=2)
+        Label(master,text="Shop",font=("Arial", 20),bg=secondary_colour,fg=text_colour,justify="center").grid(row=0,column=0,columnspan=3)
         self.shop_canvas = Canvas(master,width=320,height=500,bg=secondary_colour)
         self.shop_canvas.grid(row=2,column=0,columnspan=3,sticky="nsew",pady=5,padx=5)
         self.shop_frame = Frame(self.shop_canvas,bg=secondary_colour,width=320,height=500)
         self.shop_canvas.create_window((0, 0), window=self.shop_frame, anchor="nw") 
-        Button(master,text="close",command=lambda: main.show_frame(0),bg=main_colour,fg=text_colour).grid(row=3,column=0,sticky="sw")
+        Button(master,text="close",command=lambda: main.show_frame(0),bg=main_colour,fg=text_colour,font={"Arial",10}).grid(row=3,column=0,sticky="sw")
         add_scroll_bar(self.shop_canvas,self.shop_frame)
 #function that creates each shop item
     def create_items(self):
@@ -414,9 +414,9 @@ class Items:
             main.save_user_data()
             #updates colours
             global main_colour,secondary_colour,text_colour
-            main_colour = self.display[1]
-            secondary_colour = self.display[2]
-            text_colour = self.display[3]
+            main_colour = self.display[1] #1 is display main colour of the screen
+            secondary_colour = self.display[2] #2 is secondary colour like side bar
+            text_colour = self.display[3] #3 is text colour
             if not equiped:
                 shop_screen.apply_theme()
     def unequip_item(self):
@@ -465,7 +465,7 @@ class StopwatchTimer:
         self.timer_frame.grid(row=1,column=1,columnspan=2,pady=5,sticky="nsew")
         self.timer_frame.grid_propagate(False)
         self.timer_frame.columnconfigure((0,7),weight=1)
-        Label(self.timer_frame, text="timer", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=6)
+        Label(self.timer_frame, text="Timer", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=6)
         self.timer_label = Label(self.timer_frame, text="00:00:00", font=("Arial", 25),justify="center",bg=main_colour,fg=text_colour)
         self.timer_label.grid(row=2,column=1,columnspan=6)
         Label(self.timer_frame,text="hour",bg=main_colour,fg=text_colour).grid(row=1,column=1)
@@ -486,7 +486,7 @@ class StopwatchTimer:
         self.stopwatch_frame.grid(row=1,column=1,columnspan=3,pady=5,sticky="nsew")
         self.stopwatch_frame.grid_propagate(False)
         self.stopwatch_frame.columnconfigure((0,4),weight=1)
-        Label(self.stopwatch_frame, text="stopwatch", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=3)
+        Label(self.stopwatch_frame, text="Stopwatch", font=("Arial", 17),justify="center",pady=10,bg=main_colour,fg=text_colour).grid(row=0,column=1,columnspan=3)
         self.stopwatch_label = Label(self.stopwatch_frame, text="00:00:00", font=("Arial", 25),justify="center",bg=main_colour,fg=text_colour)
         self.stopwatch_label.grid(row=1,column=1,columnspan=3)
         Button(self.stopwatch_frame, text="Start", command=lambda:self.start_stopwatch(self.update_stopwatch),bg=main_colour,fg=text_colour).grid(row=2,column=1,pady=5)
@@ -626,9 +626,9 @@ class Main:
         self.tasks_frame.columnconfigure(2, weight=4)
         self.tasks_frame.columnconfigure(1, weight=1)
         #adding in the user info for top frame
-        self.username_lbl = Label(self.top_frame,text="username: ",bg=secondary_colour,fg=text_colour)
-        self.points_lbl = Label(self.top_frame,text="points: ",bg=secondary_colour,fg=text_colour)
-        self.level_lbl = Label(self.top_frame,text="level: ",bg=secondary_colour,fg=text_colour)
+        self.username_lbl = Label(self.top_frame,text="Username: ",bg=secondary_colour,fg=text_colour)
+        self.points_lbl = Label(self.top_frame,text="Points: ",bg=secondary_colour,fg=text_colour)
+        self.level_lbl = Label(self.top_frame,text="Level: ",bg=secondary_colour,fg=text_colour)
         self.next_level_lbl = Label(self.top_frame,text="Next lvl: ",bg=secondary_colour,fg=text_colour)
         self.username_lbl.grid(row=0,column=0,sticky="w",padx=5,pady=2)
         self.points_lbl.grid(row=0,column=2,sticky="nesw",padx=5,pady=2)
@@ -698,15 +698,15 @@ class Main:
         if user.exp >= self.next_level_calc(user.level):
             user.exp -= self.next_level_calc(user.level)
             user.level += 1
-            main.level_lbl.config(text=f"level: {user.level}")
+            main.level_lbl.config(text=f"Level: {user.level}")
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
         else:
             main.next_level_lbl.config(text=f"Next lvl: {user.exp}/{self.next_level_calc(user.level)}")
 #function that updates all user info
     def update_user_info_display(self):
-            self.username_lbl.config(text=f"username: {user.username}")
-            self.level_lbl.config(text=f"level: {user.level}")
-            self.points_lbl.config(text=f"points: {user.points}")
+            self.username_lbl.config(text=f"Username: {user.username}")
+            self.level_lbl.config(text=f"Level: {user.level}")
+            self.points_lbl.config(text=f"Points: {user.points}")
             self.next_level_lbl.config(text=f"Next lvl: {user.exp}/{main.next_level_calc(user.level)}")
 
 #function that gets user data from external file
